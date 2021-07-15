@@ -9,14 +9,22 @@ type MediaElement = HTMLVideoElement | HTMLAudioElement;
 function appendTrackElement(node: MediaElement) {
   if (!node.src || node.src.startsWith('blob:')) return;
 
+  node.crossOrigin = '';
+
   const track = document.createElement('track');
-  track.src = `${import.meta.env.API_ENDPOINT}/captions=${encodeURIComponent(
-    node.src
-  )}`;
+  track.default = true;
+  track.src = `${
+    import.meta.env.VITE_API_ENDPOINT
+  }/captions?url=${encodeURIComponent(node.src)}`;
   track.kind = 'captions';
   track.srclang = 'en';
 
+  const text = document.createTextNode(
+    "Sorry, your browser doesn't support embedded videos"
+  );
+
   node.appendChild(track);
+  node.appendChild(text);
 }
 
 const mediaRule = (node: MediaElement, context: Context) => {
