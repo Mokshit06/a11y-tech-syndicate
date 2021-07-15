@@ -2,8 +2,22 @@ import { Context, Rule } from '../utils/traverser';
 
 const errorMessage =
   'Media elements such as <audio> and <video> must have a <track> for captions.';
+const successMessage = 'Captions generated for media elements!';
 
 type MediaElement = HTMLVideoElement | HTMLAudioElement;
+
+function appendTrackElement(node: MediaElement) {
+  if (!node.src || node.src.startsWith('blob:')) return;
+
+  const track = document.createElement('track');
+  track.src = `${import.meta.env.API_ENDPOINT}/captions=${encodeURIComponent(
+    node.src
+  )}`;
+  track.kind = 'captions';
+  track.srclang = 'en';
+
+  node.appendChild(track);
+}
 
 const mediaRule = (node: MediaElement, context: Context) => {
   const muted = node.getAttribute('muted');
@@ -19,6 +33,14 @@ const mediaRule = (node: MediaElement, context: Context) => {
       node,
       message: errorMessage,
     });
+
+    appendTrackElement(node);
+
+    context.success({
+      node,
+      message: successMessage,
+    });
+
     return;
   }
 
@@ -32,6 +54,15 @@ const mediaRule = (node: MediaElement, context: Context) => {
       node,
       message: errorMessage,
     });
+
+    appendTrackElement(node);
+
+    context.success({
+      node,
+      message: successMessage,
+    });
+
+    return;
   }
 };
 
