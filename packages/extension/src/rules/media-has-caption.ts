@@ -1,4 +1,5 @@
 import { Context, Rule } from '../utils/traverser';
+import { useCaptions } from '../components/caption';
 
 const errorMessage =
   'Media elements such as <audio> and <video> must have a <track> for captions.';
@@ -22,6 +23,30 @@ function appendTrackElement(node: MediaElement) {
   const text = document.createTextNode(
     "Sorry, your browser doesn't support embedded videos"
   );
+
+  if (node.localName === 'audio') {
+    track.addEventListener('cuechange', e => {
+      const { track } = e.target as any as { track: TextTrack };
+
+      let captionArr: string[] = [];
+
+      [...track.activeCues!].forEach(x => {
+        if (x instanceof VTTCue) {
+          captionArr.push(x.text.replace(/^- /, ''));
+        }
+      });
+
+      if (!captionArr.length) return;
+
+      const caption = captionArr.join(' ');
+
+      useCaptions.getState().updateCaption(caption);
+    });
+
+    node.addEventListener('play', () => {
+      useCaptions.getState().updatePlaying(true);
+    });
+  }
 
   node.appendChild(track);
   node.appendChild(text);

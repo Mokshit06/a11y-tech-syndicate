@@ -1,5 +1,5 @@
 import './utils/add-event-listener';
-import './reset.css';
+import './main.css';
 import altText from './rules/alt-text';
 import documentHasTitle from './rules/document-has-title';
 import formAssociatedLabels from './rules/form-associated-labels';

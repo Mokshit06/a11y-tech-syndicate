@@ -17,3 +17,11 @@ model Captions {
 
   @@map("captions")
 }
+
+model Description {
+  id          Int    @id @default(autoincrement())
+  url         String @unique
+  description String
+
+  @@map("descriptions")
+}
