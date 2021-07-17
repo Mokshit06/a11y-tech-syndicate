@@ -42,7 +42,12 @@ export default async function imageDescription(req: Request, res: Response) {
 
     res.send(description.description);
   } catch (error) {
-    console.error(error);
+    if (error.request || error.response) {
+      return res.status(400).send(`Image not found`);
+    }
+
+    console.log(error);
+
     res.status(500).send(`Something went wrong\n${error}`);
   }
 }

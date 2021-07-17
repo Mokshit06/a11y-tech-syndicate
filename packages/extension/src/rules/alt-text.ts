@@ -1,4 +1,4 @@
-import { Rule } from '../utils/traverser';
+import { Context, Rule } from '../utils/traverser';
 
 function hasValue(value: any) {
   if (value === undefined) {
@@ -10,77 +10,110 @@ function hasValue(value: any) {
   return true;
 }
 
-function generateAltText(src: string) {
-  return '';
+async function generateAltText(src: string) {
+  const res = await fetch(
+    `${import.meta.env.VITE_API_ENDPOINT}/description?url=${encodeURIComponent(
+      src
+    )}`
+  );
+
+  if (!res.ok) throw new Error();
+
+  const description = await res.text();
+
+  return description;
 }
+
+const imgRule = async (node: HTMLImageElement, context: Context) => {
+  const alt = node.getAttribute('alt');
+
+  if (alt === null) {
+    if (node.getAttribute('role') === 'presentation') {
+      context.report({
+        node,
+        message:
+          'Prefer alt="" over a presentational role. First rule of aria is to not use aria if it can be achieved via native HTML.',
+      });
+
+      node.alt = '';
+      node.removeAttribute('role');
+
+      context.success({
+        node,
+        message: `Generated alt text for ${node.src}`,
+      });
+
+      return;
+    }
+
+    const ariaLabel = node.getAttribute('aria-label');
+
+    if (ariaLabel !== null) {
+      if (!hasValue(ariaLabel)) {
+        context.report({
+          node,
+          message:
+            'The aria-label attribute must have a value. The alt attribute is preferred over aria-label for images.',
+        });
+
+        try {
+          const altText = await generateAltText(node.src);
+
+          node.setAttribute('aria-label', altText);
+        } catch {}
+      }
+      return;
+    }
+
+    const ariaLabelledby = node.getAttribute('aria-labelledby');
+
+    if (ariaLabelledby !== null) {
+      if (!hasValue(ariaLabelledby)) {
+        context.report({
+          node,
+          message:
+            'The aria-labelledby attribute must have a value. The alt attribute is preferred over aria-labelledby for images.',
+        });
+      }
+      return;
+    }
+
+    context.report({
+      node,
+      message: `<img /> elements must have an alt prop, either with meaningful text, or an empty string for decorative images.`,
+    });
+
+    try {
+      const altText = await generateAltText(node.src);
+      node.alt = altText;
+
+      context.success({
+        node,
+        message: `Generated a meaningful alt text!`,
+      });
+    } catch {}
+
+    return;
+  }
+};
 
 const altText: Rule = {
   name: 'alt-text',
   visitor: {
     img(node, context) {
-      const alt = node.getAttribute('alt');
+      imgRule(node, context);
 
-      if (alt === null) {
-        if (node.getAttribute('role') === 'presentation') {
-          context.report({
-            node,
-            message:
-              'Prefer alt="" over a presentational role. First rule of aria is to not use aria if it can be achieved via native HTML.',
-          });
-
-          node.alt = '';
-          node.removeAttribute('role');
-
-          context.success({
-            node,
-            message: `Generated alt text for ${node.src}`,
-          });
-
-          return;
-        }
-
-        const ariaLabel = node.getAttribute('aria-label');
-
-        if (ariaLabel !== null) {
-          if (!hasValue(ariaLabel)) {
-            context.report({
-              node,
-              message:
-                'The aria-label attribute must have a value. The alt attribute is preferred over aria-label for images.',
-            });
-
-            node.setAttribute('aria-label', generateAltText(node.src));
+      const mutationObserver = new MutationObserver(mutations => {
+        for (const mutation of mutations) {
+          if (mutation.type === 'attributes') {
+            imgRule(node, context);
           }
-          return;
         }
+      });
 
-        const ariaLabelledby = node.getAttribute('aria-labelledby');
-
-        if (ariaLabelledby !== null) {
-          if (!hasValue(ariaLabelledby)) {
-            context.report({
-              node,
-              message:
-                'The aria-labelledby attribute must have a value. The alt attribute is preferred over aria-labelledby for images.',
-            });
-          }
-          return;
-        }
-
-        context.report({
-          node,
-          message: `<img /> elements must have an alt prop, either with meaningful text, or an empty string for decorative images.`,
-        });
-
-        node.alt = '';
-
-        context.success({
-          node,
-          message: `Generated a meaningful alt text!`,
-        });
-
-        return;
-      }
+      mutationObserver.observe(node, {
+        attributes: true,
+      });
     },
     object(node, context) {
       const ariaLabel = node.getAttribute('aria-label');
