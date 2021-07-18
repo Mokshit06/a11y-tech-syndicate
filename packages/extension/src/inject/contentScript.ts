@@ -105,7 +105,6 @@ function send(message: TODO) {
 }
 
 function handleMessages(event: TODO) {
-  // if (!isAllowed()) return;
   if (!event || event.source !== window || typeof event.data !== 'object')
     return;
   const message = event.data;

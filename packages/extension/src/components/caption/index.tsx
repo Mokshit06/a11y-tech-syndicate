@@ -44,14 +44,3 @@ export default function Caption() {
     </AnimatePresence>
   );
 }
-
-let captionNode = document.querySelector('#caption-node-a11y');
-
-if (!captionNode) {
-  const node = document.createElement('div');
-  node.id = 'caption-node-a11y';
-  document.body.appendChild(node);
-  captionNode = node;
-}
-
-render(<Caption />, captionNode);

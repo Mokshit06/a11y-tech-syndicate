@@ -7,7 +7,9 @@
   ],
   "scripts": {
     "dev": "concurrently \"yarn workspace extension dev\" \"yarn workspace server dev\"",
-    "build": "yarn workspaces run build"
+    "build": "yarn workspaces run build",
+    "extension": "yarn workspace extension dev",
+    "server": "yarn workspace server dev"
   },
   "devDependencies": {
     "concurrently": "^6.2.0",

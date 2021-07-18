@@ -26,6 +26,21 @@ const SUCCESS_STYLE = `
   margin: 10px 0px 7px 0px;
 `;
 
+// TODO change impl to maybe just traverse the nodes
+// specified in rules
+//
+// rules = [
+//  {
+//    name: 'visitor',
+//    visitor: {
+//      img: () = {}
+//      input: () = {}
+//    }
+//  }
+// ]
+//
+// nodes = [['img', [() => {}]], ['input', [() => {}]]]
+//
 export function traverser(node: HTMLElement, rules: Rule[]) {
   console.time('traverse');
 

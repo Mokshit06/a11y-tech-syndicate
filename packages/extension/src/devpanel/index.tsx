@@ -1,6 +1,6 @@
 import { render } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
-
+import { useEffect, useState } from 'preact/hooks';
+import Caption from '../components/caption';
 // import '../utils/add-event-listener';
 // import '../main.css';
 import altText from '../rules/alt-text';
@@ -27,6 +27,23 @@ function runTraverser() {
     validLang,
     formAssociatedLabels,
     listContainsOnlyLi,
+    {
+      name: 'append-caption',
+      visitor: {
+        body(node) {
+          let captionNode = node.querySelector('#caption-node-a11y');
+
+          if (!captionNode) {
+            const node = document.createElement('div');
+            node.id = 'caption-node-a11y';
+            node.appendChild(node);
+            captionNode = node;
+          }
+
+          render(<Caption />, captionNode);
+        },
+      },
+    },
   ]);
 }
 

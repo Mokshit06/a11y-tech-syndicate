@@ -1,8 +1,20 @@
 import preact from '@preact/preset-vite';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import { readdirSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, parse } from 'path';
 import { defineConfig } from 'vite';
+
+const resolveDir = (path: string) =>
+  readdirSync(path).map(filename => {
+    return [parse(filename).name, resolve(__dirname, path, filename)] as const;
+  });
+
+const NOT_TO_HASH = [
+  'contentScript',
+  'background',
+  'pageScript',
+  'pageScriptWrap',
+];
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,17 +27,17 @@ export default defineConfig({
     },
   },
   build: {
+    minify: 'esbuild',
     rollupOptions: {
-      input: [
-        ...readdirSync('static').map(name =>
-          resolve(__dirname, 'static', name)
-        ),
-        resolve(__dirname, 'src/background/index.ts'),
-      ],
+      input: Object.fromEntries([
+        ...resolveDir('static'),
+        ...resolveDir('src/inject'),
+        ['background', resolve(__dirname, 'src/background/index.ts')],
+      ]),
       output: {
         entryFileNames(info) {
-          if (info.name === 'background') {
-            return 'background.js';
+          if (NOT_TO_HASH.includes(info.name)) {
+            return '[name].js';
           }
           return '[name].[hash].js';
         },
