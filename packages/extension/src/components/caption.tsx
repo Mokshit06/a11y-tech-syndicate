@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import create from 'zustand';
 import { render } from 'preact';
-import { captionStyle } from './caption.css';
+import create from 'zustand';
+import './caption.css';
 
 type CaptionState = {
   caption: string;
@@ -32,7 +32,7 @@ export default function Caption() {
           }}
           dragConstraints={{ current: document.documentElement }}
           whileTap={{ scale: 0.98 }}
-          className={captionStyle}
+          className="a11y-audio-caption"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

@@ -1,4 +1,4 @@
-import { liReset } from '../reset.css';
+import '../li-reset.css';
 import { Context, Rule } from '../utils/traverser';
 
 const errorMessage =
@@ -42,7 +42,7 @@ function listRule(node: ListElement, context: Context) {
         }
 
         li.style.cssText = child.style.cssText;
-        li.className = `${child.className} ${liReset}`;
+        li.className = `${child.className} a11y-reset-li`;
 
         const allEventListeners = child.getEventListeners()!;
 

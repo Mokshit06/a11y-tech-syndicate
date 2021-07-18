@@ -2,13 +2,15 @@
   "name": "extension",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build --watch",
     "build": "tsc && vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "dev:web": "vite"
   },
   "dependencies": {
     "@vanilla-extract/css": "^1.1.0",
     "framer-motion": "^4.1.17",
+    "jsan": "^3.1.13",
     "languagedetect": "^2.0.0",
     "preact": "^10.5.13",
     "zustand": "^3.5.7"

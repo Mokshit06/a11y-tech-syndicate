@@ -1,0 +1,11 @@
+.a11y-audio-caption {
+  background-color: rgba(12 12 12 / 52%);
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: #fff;
+  backdrop-filter: blur(5px);
+  max-width: 500px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-family: Roboto;
+}
