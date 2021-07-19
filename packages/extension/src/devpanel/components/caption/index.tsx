@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { render } from 'preact';
+import { h, Fragment } from 'preact';
 import create from 'zustand';
 import './caption.css';
 

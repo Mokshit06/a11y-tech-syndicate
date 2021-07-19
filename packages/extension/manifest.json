@@ -3,12 +3,13 @@
   "name": "a11y",
   "version": "0.1.0",
   "background": {
-    "scripts": ["dist/background.js"]
+    "scripts": ["out/background/index.js"]
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["dist/contentScript.js", "dist/pageScriptWrap.js"],
+      "js": ["out/inject/contentScript.js", "out/inject/pageScriptWrap.js"],
+      "css": ["out/inject/pageScript.css"],
       "run_at": "document_start",
       "all_frames": true
     }
@@ -16,7 +17,7 @@
   "externally_connectable": {
     "ids": ["*"]
   },
-  "web_accessible_resources": ["dist/pageScript.js"],
-  "devtools_page": "dist/static/devtools.html",
+  "web_accessible_resources": ["out/inject/pageScript.js"],
+  "devtools_page": "static/devtools.html",
   "permissions": ["<all_urls>"]
 }

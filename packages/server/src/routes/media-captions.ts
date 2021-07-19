@@ -31,6 +31,8 @@ export default async function mediaCaptions(req: Request, res: Response) {
       responseType: 'stream',
     });
     console.timeEnd('video-fetch');
+
+    // TODO convert to duplex stream
     const audioStream = new AudioWritableStream();
 
     console.time('convert-to-audio');
@@ -54,6 +56,8 @@ export default async function mediaCaptions(req: Request, res: Response) {
     };
 
     console.time('generate-captions');
+    // TODO change to `recognizeStream` api
+    // and take duplex stream as arg
     const [response] = await client.recognize(request);
     const captions = generateWebVTT(response);
     console.timeEnd('generate-captions');

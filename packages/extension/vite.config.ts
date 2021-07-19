@@ -35,9 +35,7 @@ export default defineConfig({
         ['background', resolve(__dirname, 'src/background/index.ts')],
       ]),
       output: {
-        manualChunks: {
-          languagedetect: ['languagedetect'],
-        },
+        manualChunks: {},
         entryFileNames(info) {
           if (NOT_TO_HASH.includes(info.name)) {
             return '[name].js';

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'preact/hooks';
+import { h, Fragment } from 'preact';
+import { useEffect } from 'preact/hooks';
 import create from 'zustand';
 import './app.css';
 
@@ -42,19 +43,33 @@ const bgConnection = chrome.runtime.connect({
 });
 
 export default function App() {
-  const [messages, setMessages] = useState<any[]>([]);
   const { errors, fixes, warnings } = useAccessibilityStats();
 
-  const onClick = () => {
-    bgConnection.postMessage({ type: 'SUCCESS' });
-    // chrome.runtime.sendMessage('s', res => {
-    //   setMessages([...messages, res]);
-    // });
+  const handleMessage = (message: any, port: chrome.runtime.Port) => {
+    console.log({ message, port });
+    switch (message.type) {
+      case 'error': {
+        console.log('error', message);
+      }
+      case 'fix': {
+        console.log('fix', message);
+      }
+      case 'warning': {
+        console.log('warning', message);
+      }
+    }
   };
 
+  useEffect(() => {
+    bgConnection.onMessage.addListener(handleMessage);
+
+    return () => {
+      bgConnection.onMessage.removeListener(handleMessage);
+    };
+  });
+
   return (
-    <div onClick={onClick}>
-      <pre>{JSON.stringify(messages)}</pre>
+    <div>
       <div>
         <h1>Errors</h1>
         {errors.map((error, index) => (

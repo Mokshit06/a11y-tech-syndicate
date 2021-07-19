@@ -1,7 +1,7 @@
 import LanguageDetect from 'languagedetect';
 import langToCode from './lang-to-code';
 
-// TODO change impl to use google cloud translation api
+// TODO change impl to use gcp translation api / chrome.i18n
 const langDetector = new LanguageDetect();
 
 export default function detectLanguage(text: string) {

@@ -1,4 +1,4 @@
-import { render } from 'preact';
+import { render, h, Fragment } from 'preact';
 import App from './app';
 // // import '../utils/add-event-listener';
 // // import '../main.css';

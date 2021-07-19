@@ -2,7 +2,7 @@
   "name": "extension",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite build --watch",
+    "dev": "rm -rf out/* && node scripts/build",
     "build": "tsc && vite build",
     "serve": "vite preview",
     "dev:web": "vite"
