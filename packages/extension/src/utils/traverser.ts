@@ -1,3 +1,5 @@
+import create from 'zustand';
+
 export type Context = {
   report: (warning: { node: any; message: string }) => void;
   success: (message: { node: any; message: string }) => void;
@@ -26,6 +28,15 @@ const SUCCESS_STYLE = `
   margin: 10px 0px 7px 0px;
 `;
 
+const defaultContext = (name: string): Context => ({
+  report: ({ node, message }) => {
+    console.warn(`${name}: ${message}`, node);
+  },
+  success: ({ node, message }) => {
+    console.log(`%c${name}: ${message}`, SUCCESS_STYLE, node);
+  },
+});
+
 // TODO change impl to maybe just traverse the nodes
 // specified in rules
 //
@@ -41,22 +52,26 @@ const SUCCESS_STYLE = `
 //
 // nodes = [['img', [() => {}]], ['input', [() => {}]]]
 //
-export function traverser(node: HTMLElement, rules: Rule[]) {
+export function traverser(
+  node: HTMLElement,
+  rules: Rule[],
+  createContext: (name: string) => Context = defaultContext
+) {
   console.time('traverse');
+  const contexts = new Map();
 
   function traverseNode(node: Element) {
     rules.forEach(rule => {
       const patch = rule.visitor[node.nodeName.toLowerCase() as keyof Rule];
 
       if (patch) {
-        patch(node as any, {
-          report: ({ node, message }) => {
-            console.warn(`${rule.name}: ${message}`, node);
-          },
-          success: ({ node, message }) => {
-            console.log(`%c${rule.name}: ${message}`, SUCCESS_STYLE, node);
-          },
-        });
+        const ctx = contexts.has(rule.name)
+          ? contexts.get(rule.name)
+          : createContext(rule.name);
+
+        patch(node as any, ctx);
+
+        contexts.set(rule.name, ctx);
       }
     });
 

@@ -1,5 +1,4 @@
-import { h, Fragment } from 'preact';
-import { useEffect } from 'preact/hooks';
+import React, { useEffect } from 'react';
 import create from 'zustand';
 import './app.css';
 
@@ -47,17 +46,17 @@ export default function App() {
 
   const handleMessage = (message: any, port: chrome.runtime.Port) => {
     console.log({ message, port });
-    switch (message.type) {
-      case 'error': {
-        console.log('error', message);
-      }
-      case 'fix': {
-        console.log('fix', message);
-      }
-      case 'warning': {
-        console.log('warning', message);
-      }
-    }
+    // switch (message.type) {
+    //   case 'error': {
+    //     console.log('error', message);
+    //   }
+    //   case 'fix': {
+    //     console.log('fix', message);
+    //   }
+    //   case 'warning': {
+    //     console.log('warning', message);
+    //   }
+    // }
   };
 
   useEffect(() => {
@@ -69,7 +68,7 @@ export default function App() {
   });
 
   return (
-    <div>
+    <div onClick={() => {}}>
       <div>
         <h1>Errors</h1>
         {errors.map((error, index) => (

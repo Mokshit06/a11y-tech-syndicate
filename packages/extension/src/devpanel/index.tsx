@@ -1,4 +1,5 @@
-import { render, h, Fragment } from 'preact';
+import React from 'react';
+import { render } from 'preact/compat';
 import App from './app';
 // // import '../utils/add-event-listener';
 // // import '../main.css';

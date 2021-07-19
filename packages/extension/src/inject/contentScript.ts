@@ -10,7 +10,7 @@ function connect() {
   console.log('CONNECTING');
   connected = true;
 
-  bg = chrome.runtime.connect({ name: 'tab' });
+  bg = chrome.runtime.connect({ name: 'content_script' });
 
   console.log({ bg });
 
@@ -51,7 +51,7 @@ window.addEventListener('message', e => {
 
   if (!connected) connect();
 
-  bg?.postMessage({ type: 'relay', message });
+  bg?.postMessage(message);
 });
 
 // runTraverser();

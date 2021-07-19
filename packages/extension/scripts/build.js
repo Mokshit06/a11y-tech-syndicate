@@ -9,7 +9,7 @@ const preactAlias = {
   setup(build) {
     build.onResolve({ filter: /^react$/ }, args => {
       return {
-        path: require.resolve('preact'),
+        path: require.resolve('preact/compat'),
       };
     });
   },

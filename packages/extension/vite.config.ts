@@ -22,8 +22,8 @@ export default defineConfig({
   plugins: [preact(), vanillaExtractPlugin()],
   resolve: {
     alias: {
-      'react-dom': 'preact',
-      react: 'preact',
+      'react-dom': 'preact/compat',
+      react: 'preact/compat',
     },
   },
   build: {

@@ -1,4 +1,4 @@
-import { render } from 'preact';
+import { render } from 'preact/compat';
 import Caption from '../devpanel/components/caption';
 import altText from '../rules/alt-text';
 import documentHasTitle from '../rules/document-has-title';
@@ -20,42 +20,72 @@ declare global {
   }
 }
 
-function runTraverser() {
-  traverser(document.documentElement, [
-    altText,
-    htmlHasLang,
-    mediaHasCaption,
-    headingHasContent,
-    noAriaHiddenBody,
-    linksDiscernableName,
-    documentHasTitle,
-    validLang,
-    formAssociatedLabels,
-    listContainsOnlyLi,
+function postMessage(payload: {
+  event: string;
+  payload: { message: string; node: any; name: string };
+}) {
+  window.postMessage(
     {
-      name: 'append-caption',
-      visitor: {
-        body(node) {
-          // let captionNode = node.querySelector('#caption-node-a11y');
-          // if (!captionNode) {
-          //   const node = document.createElement('div');
-          //   node.id = 'caption-node-a11y';
-          //   node.appendChild(node);
-          //   captionNode = node;
-          // }
-          // render(<Caption />, captionNode);
+      source: '@devtools-page',
+      payload: {
+        event: payload.event,
+        payload: {
+          message: payload.payload.message,
+          name: payload.payload.name,
         },
       },
     },
-  ]);
+    '*'
+  );
+}
+
+function runTraverser() {
+  traverser(
+    document.documentElement,
+    [
+      altText,
+      htmlHasLang,
+      mediaHasCaption,
+      headingHasContent,
+      noAriaHiddenBody,
+      linksDiscernableName,
+      documentHasTitle,
+      validLang,
+      formAssociatedLabels,
+      listContainsOnlyLi,
+      {
+        name: 'append-caption',
+        visitor: {
+          body(node) {
+            let captionNode = node.querySelector('#caption-node-a11y');
+            console.log(captionNode);
+            // if (!captionNode) {
+            //   const node = document.createElement('div');
+            //   node.id = 'caption-node-a11y';
+            //   node.appendChild(node);
+            //   captionNode = node;
+            // }
+            // render(<Caption />, captionNode);
+          },
+        },
+      },
+    ],
+    name => ({
+      report: payload => {
+        postMessage({
+          event: 'error',
+          payload: { ...payload, name },
+        });
+      },
+      success: payload => {
+        postMessage({ event: 'fix', payload: { ...payload, name } });
+      },
+    })
+  );
 }
 
 window.__A11Y_EXTENSION__ = {
-  run() {
-    const result = runTraverser();
-
-    // window.postMessage({}, '*');
-  },
+  run: runTraverser,
 };
 
 export {};

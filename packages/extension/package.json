@@ -18,6 +18,7 @@
   "devDependencies": {
     "@preact/preset-vite": "^2.0.0",
     "@types/chrome": "^0.0.146",
+    "@types/react": "^17.0.14",
     "@vanilla-extract/vite-plugin": "^1.0.0"
   }
 }
