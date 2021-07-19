@@ -19,10 +19,4 @@ window.__A11Y_EXTENSION__ = {
   },
 };
 
-window.addEventListener('message', e => {
-  if (e.data.a11y) {
-    console.log(e.data);
-  }
-});
-
 export {};

@@ -1,5 +1,5 @@
 import { Context, Rule } from '../utils/traverser';
-import { useCaptions } from '../components/caption';
+import { useCaptions } from '../devpanel/components/caption';
 
 const errorMessage =
   'Media elements such as <audio> and <video> must have a <track> for captions.';

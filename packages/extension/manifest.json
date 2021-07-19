@@ -13,6 +13,9 @@
       "all_frames": true
     }
   ],
+  "externally_connectable": {
+    "ids": ["*"]
+  },
   "web_accessible_resources": ["dist/pageScript.js"],
   "devtools_page": "dist/static/devtools.html",
   "permissions": ["<all_urls>"]

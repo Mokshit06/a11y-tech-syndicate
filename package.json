@@ -9,7 +9,9 @@
     "dev": "concurrently \"yarn workspace extension dev\" \"yarn workspace server dev\"",
     "build": "yarn workspaces run build",
     "extension": "yarn workspace extension dev",
-    "server": "yarn workspace server dev"
+    "extension:build": "yarn workspace extension build",
+    "server": "yarn workspace server dev",
+    "server:build": "yarn workspace server build"
   },
   "devDependencies": {
     "concurrently": "^6.2.0",
