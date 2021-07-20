@@ -11,14 +11,21 @@ const htmlHasLang: Rule = {
 
       if (lang) return;
 
-      context.report({
+      const langData = detectLanguage(node.innerText);
+
+      if (!langData) {
+        context.error({
+          node,
+          message: errorMessage,
+        });
+
+        return;
+      }
+
+      context.warn({
         node,
         message: errorMessage,
       });
-
-      const langData = detectLanguage(node.innerText);
-
-      if (!langData) return;
 
       const { code, language } = langData;
 

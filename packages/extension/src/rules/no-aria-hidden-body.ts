@@ -10,7 +10,7 @@ const noAriaHiddenBody: Rule = {
       const ariaHidden = node.getAttribute('aria-hidden');
 
       if (ariaHidden !== null) {
-        context.report({
+        context.warn({
           node,
           message: errorMessage,
         });

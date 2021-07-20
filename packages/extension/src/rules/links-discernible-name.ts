@@ -11,7 +11,7 @@ const linksDiscernableName: Rule = {
         node.innerText.toLowerCase().includes('read more');
 
       if (noDiscernibleName) {
-        context.report({
+        context.error({
           node,
           message: errorMessage,
         });

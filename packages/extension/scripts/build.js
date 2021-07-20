@@ -31,8 +31,19 @@ esbuild
     loader: {
       '.png': 'file',
     },
+    sourcemap: 'inline',
     outdir: resolve('out'),
-    plugins: [preactAlias],
+    plugins: [
+      preactAlias,
+      {
+        name: 'log-rebuild',
+        setup(build) {
+          build.onEnd(() => {
+            console.log('finished bundling');
+          });
+        },
+      },
+    ],
     minify: false,
     watch: true,
     loader: {

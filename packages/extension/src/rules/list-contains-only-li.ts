@@ -20,7 +20,7 @@ function listRule(node: ListElement, context: Context) {
   });
 
   if (!containsOnlyLi) {
-    context.report({
+    context.warn({
       node,
       message: errorMessage,
     });

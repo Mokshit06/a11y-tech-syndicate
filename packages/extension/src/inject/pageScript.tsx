@@ -1,5 +1,3 @@
-import { render } from 'preact/compat';
-import Caption from '../devpanel/components/caption';
 import altText from '../rules/alt-text';
 import documentHasTitle from '../rules/document-has-title';
 import formAssociatedLabels from '../rules/form-associated-labels';
@@ -10,6 +8,7 @@ import listContainsOnlyLi from '../rules/list-contains-only-li';
 import mediaHasCaption from '../rules/media-has-caption';
 import noAriaHiddenBody from '../rules/no-aria-hidden-body';
 import validLang from '../rules/valid-lang';
+import '../utils/add-event-listener';
 import { traverser } from '../utils/traverser';
 
 declare global {
@@ -18,6 +17,25 @@ declare global {
       run: any;
     };
   }
+}
+
+const listeners = new Map();
+
+function setListener(onMessage: (...args: any[]) => any, instanceId: any) {
+  listeners.set(instanceId, onMessage);
+
+  // window.addEventListener('message', handleMessages, false);
+}
+
+function handleMessages(e: MessageEvent<any>) {
+  console.log(e.data);
+  const message = e.data;
+  if (!message || message.source !== '@devtools-extension') return;
+
+  listeners.forEach((listener, id) => {
+    if (message.id && id !== message.id) return;
+    listener(message);
+  });
 }
 
 function postMessage(payload: {
@@ -71,13 +89,21 @@ function runTraverser() {
       },
     ],
     name => ({
-      report: payload => {
+      error: payload => {
         postMessage({
           event: 'error',
           payload: { ...payload, name },
         });
       },
+      warn: payload => {
+        console.log('Warn', payload);
+        postMessage({
+          event: 'warn',
+          payload: { ...payload, name },
+        });
+      },
       success: payload => {
+        console.log('fix', payload);
         postMessage({ event: 'fix', payload: { ...payload, name } });
       },
     })
@@ -87,5 +113,7 @@ function runTraverser() {
 window.__A11Y_EXTENSION__ = {
   run: runTraverser,
 };
+
+window.addEventListener('message', handleMessages, false);
 
 export {};

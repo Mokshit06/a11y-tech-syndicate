@@ -16,14 +16,21 @@ const validLang: Rule = {
 
       if (isValidLang) return;
 
-      context.report({
+      const langCode = langToCode(lang.toLowerCase());
+
+      if (!langCode) {
+        context.error({
+          node,
+          message: errorMessage,
+        });
+
+        return;
+      }
+
+      context.warn({
         node,
         message: errorMessage,
       });
-
-      const langCode = langToCode(lang.toLowerCase());
-
-      if (!langCode) return;
 
       node.setAttribute('lang', langCode);
 

@@ -12,7 +12,7 @@ const formLabelRule = (
 
   if (hasForLabel) return;
 
-  context.report({
+  context.error({
     node,
     message: 'Form elements do not have associated labels',
   });

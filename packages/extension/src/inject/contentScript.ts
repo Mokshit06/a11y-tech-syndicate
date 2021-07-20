@@ -12,7 +12,19 @@ function connect() {
 
   bg = chrome.runtime.connect({ name: 'content_script' });
 
-  console.log({ bg });
+  bg.onMessage.addListener(message => {
+    if (message?.event === 'traverse') {
+      window.postMessage(
+        {
+          source: '@devtools-extension',
+          payload: {
+            event: 'traverse',
+          },
+        },
+        '*'
+      );
+    }
+  });
 
   // bg?.onMessage.addListener(message => {
   //   if (message.action) {

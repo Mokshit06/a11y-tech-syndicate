@@ -1,7 +1,8 @@
 import create from 'zustand';
 
 export type Context = {
-  report: (warning: { node: any; message: string }) => void;
+  error: (error: { node: any; message: string }) => void;
+  warn: (warning: { node: any; message: string }) => void;
   success: (message: { node: any; message: string }) => void;
 };
 
@@ -28,8 +29,18 @@ const SUCCESS_STYLE = `
   margin: 10px 0px 7px 0px;
 `;
 
+const ERROR_STYLE = `
+  background-color: rgba(255, 0, 0, 0.7);
+  color: white;
+  padding: 3px 5px;
+  margin: 10px 0px 7px 0px;
+`;
+
 const defaultContext = (name: string): Context => ({
-  report: ({ node, message }) => {
+  error: ({ node, message }) => {
+    console.log(`%c${name}: ${message}`, ERROR_STYLE, node);
+  },
+  warn: ({ node, message }) => {
     console.warn(`${name}: ${message}`, node);
   },
   success: ({ node, message }) => {

@@ -40,10 +40,6 @@ function relay(message: any, sender: chrome.runtime.MessageSender) {
     id: tabId,
   };
 
-  console.log(action);
-
-  console.log([...connections.panel.entries()]);
-
   connections.panel.forEach(connection => {
     connection.postMessage(action);
   });
@@ -71,6 +67,14 @@ chrome.runtime.onConnect.addListener(port => {
     connections.panel.set(id, port);
 
     const listener = (message: any) => {
+      if (message.payload.event === 'start') {
+        console.log('LISTENER', message);
+        connections.tab.forEach(tab => tab.postMessage({ event: 'traverse' }));
+        connections.tab.get(id)?.postMessage({
+          event: 'traverse',
+        });
+      }
+
       console.log(message);
     };
 

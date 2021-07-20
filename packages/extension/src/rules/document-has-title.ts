@@ -11,7 +11,7 @@ const documentHasTitle: Rule = {
       });
 
       if (!hasTitle) {
-        context.report({
+        context.error({
           node,
           message: errorMessage,
         });

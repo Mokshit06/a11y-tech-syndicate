@@ -62,7 +62,7 @@ const mediaRule = (node: MediaElement, context: Context) => {
   }) as HTMLTrackElement[];
 
   if (trackChildren.length === 0) {
-    context.report({
+    context.warn({
       node,
       message: errorMessage,
     });
@@ -83,7 +83,7 @@ const mediaRule = (node: MediaElement, context: Context) => {
   });
 
   if (!hasCaption) {
-    context.report({
+    context.warn({
       node,
       message: errorMessage,
     });

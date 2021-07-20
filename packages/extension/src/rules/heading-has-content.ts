@@ -9,7 +9,7 @@ const headingRule = (node: HTMLHeadingElement, context: Context) => {
   if (isHiddenFromScreenReader(node)) return;
 
   if (!node.innerText) {
-    context.report({
+    context.warn({
       message: errorMessage,
       node,
     });

@@ -42,21 +42,24 @@ const bgConnection = chrome.runtime.connect({
 });
 
 export default function App() {
-  const { errors, fixes, warnings } = useAccessibilityStats();
+  const { errors, fixes, warnings, addError, addFix, addWarning } =
+    useAccessibilityStats();
 
   const handleMessage = (message: any, port: chrome.runtime.Port) => {
-    console.log({ message, port });
-    // switch (message.type) {
-    //   case 'error': {
-    //     console.log('error', message);
-    //   }
-    //   case 'fix': {
-    //     console.log('fix', message);
-    //   }
-    //   case 'warning': {
-    //     console.log('warning', message);
-    //   }
-    // }
+    switch (message?.message.payload.event) {
+      case 'error': {
+        addError(message.message.payload.payload.message);
+        break;
+      }
+      case 'fix': {
+        addFix(message.message.payload.payload.message);
+        break;
+      }
+      case 'warn': {
+        addWarning(message.message.payload.payload.message);
+        break;
+      }
+    }
   };
 
   useEffect(() => {
@@ -67,8 +70,19 @@ export default function App() {
     };
   });
 
+  const handleStart = (e: MouseEvent) => {
+    bgConnection.postMessage({
+      source: '@devtools-extension',
+      payload: {
+        event: 'start',
+        payload: undefined,
+      },
+    });
+  };
+
   return (
-    <div onClick={() => {}}>
+    <div>
+      <button onClick={handleStart}>Start</button>
       <div>
         <h1>Errors</h1>
         {errors.map((error, index) => (
