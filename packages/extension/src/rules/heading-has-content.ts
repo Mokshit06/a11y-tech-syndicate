@@ -8,13 +8,37 @@ const successMessage = 'Removed empty heading element';
 const headingRule = (node: HTMLHeadingElement, context: Context) => {
   if (isHiddenFromScreenReader(node)) return;
 
+  const mutationObserver = new MutationObserver(mutations => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'characterData' || mutation.type === 'childList') {
+        if (!node.innerText) {
+          context.warn({
+            message: errorMessage,
+            node,
+          });
+
+          node.hidden = true;
+        } else {
+          node.hidden = false;
+        }
+      }
+    }
+  });
+
   if (!node.innerText) {
+    console.log(node.innerText, node.innerHTML, node);
     context.warn({
       message: errorMessage,
       node,
     });
 
-    node.remove();
+    mutationObserver.observe(node, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    node.hidden = true;
 
     context.success({
       node,

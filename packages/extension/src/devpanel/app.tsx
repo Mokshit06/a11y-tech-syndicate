@@ -46,6 +46,8 @@ export default function App() {
     useAccessibilityStats();
 
   const handleMessage = (message: any, port: chrome.runtime.Port) => {
+    if (message.id !== id) return;
+
     switch (message?.message.payload.event) {
       case 'error': {
         addError(message.message.payload.payload.message);

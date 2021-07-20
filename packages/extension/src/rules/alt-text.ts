@@ -11,17 +11,21 @@ function hasValue(value: any) {
 }
 
 async function generateAltText(src: string) {
-  const res = await fetch(
-    `${import.meta.env.VITE_API_ENDPOINT}/description?url=${encodeURIComponent(
-      src
-    )}`
-  );
+  try {
+    const res = await fetch(
+      `${
+        import.meta.env.VITE_API_ENDPOINT
+      }/description?url=${encodeURIComponent(src)}`
+    );
 
-  if (!res.ok) throw new Error();
+    if (!res.ok) throw new Error();
 
-  const description = await res.text();
+    const description = await res.text();
 
-  return description;
+    return description;
+  } catch {
+    return '';
+  }
 }
 
 const imgRule = async (node: HTMLImageElement, context: Context) => {

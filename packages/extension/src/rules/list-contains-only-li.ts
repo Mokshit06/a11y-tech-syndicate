@@ -14,62 +14,53 @@ function isValidChild(localName: string) {
 type ListElement = HTMLUListElement | HTMLOListElement;
 
 function listRule(node: ListElement, context: Context) {
-  const children = [...node.children] as ListElement[];
+  const children = [...node.children] as HTMLLIElement[];
   const containsOnlyLi = children.every(child => {
     return isValidChild(child.localName);
   });
 
   if (!containsOnlyLi) {
-    context.warn({
+    context.error({
       node,
       message: errorMessage,
     });
-
-    children.forEach(child => {
-      // might not work with some elements
-      if (!isValidChild(child.localName)) {
-        const li = document.createElement('li');
-
-        for (const key in child) {
-          if (key === 'eventListeners') continue;
-          if (key in li) {
-            try {
-              (li as any)[key] = (child as any)[key];
-            } catch {}
-          } else {
-            li.setAttribute(key, (child as any)[key]);
-          }
-        }
-
-        li.style.cssText = child.style.cssText;
-        li.className = `${child.className} a11y-reset-li`;
-
-        const allEventListeners = child.getEventListeners()!;
-
-        for (const [type, listeners] of Object.entries(allEventListeners)) {
-          for (const listener of listeners) {
-            li.addEventListener(type, listener.listener, listener.options);
-          }
-        }
-
-        li.innerHTML = child.innerHTML;
-
-        child.replaceWith(li);
-
-        context.success({
-          node,
-          message: getSuccessMessage(child.localName),
-        });
-      }
-    });
   }
+}
+
+function listObserverRule(node: ListElement, context: Context) {
+  listRule(node, context);
+
+  const mutationObserver = new MutationObserver(mutations => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList') {
+        const children = [...mutation.addedNodes] as ListElement[];
+
+        const containsOnlyLi = children.every(child => {
+          return isValidChild(child.localName);
+        });
+
+        if (!containsOnlyLi) {
+          context.error({
+            node,
+            message: errorMessage,
+          });
+        }
+      }
+    }
+  });
+
+  mutationObserver.observe(node, {
+    childList: true,
+    attributes: true,
+    subtree: true,
+  });
 }
 
 const listContainsOnlyLi: Rule = {
   name: 'list-contains-only-li',
   visitor: {
-    ul: listRule,
-    ol: listRule,
+    ul: listObserverRule,
+    ol: listObserverRule,
   },
 };
 

@@ -69,13 +69,10 @@ chrome.runtime.onConnect.addListener(port => {
     const listener = (message: any) => {
       if (message.payload.event === 'start') {
         console.log('LISTENER', message);
-        connections.tab.forEach(tab => tab.postMessage({ event: 'traverse' }));
         connections.tab.get(id)?.postMessage({
           event: 'traverse',
         });
       }
-
-      console.log(message);
     };
 
     port.onMessage.addListener(listener);

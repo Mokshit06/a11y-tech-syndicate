@@ -1,14 +1,16 @@
-import { SpeechClient } from '@google-cloud/speech';
 import type { protos } from '@google-cloud/speech';
+import { SpeechClient } from '@google-cloud/speech';
 import axios from 'axios';
+import type { Request, Response } from 'express';
 import type { Readable } from 'stream';
+import prisma from '../lib/prisma';
 import AudioWritableStream from '../utils/audio-writable-stream';
 import convertToAudio from '../utils/convert-to-audio';
 import generateWebVTT from '../utils/generate-web-vtt';
-import prisma from '../lib/prisma';
-import type { Request, Response } from 'express';
 
 const client = new SpeechClient();
+
+const inflightRequests = new Map<string, Promise<any>>();
 
 export default async function mediaCaptions(req: Request, res: Response) {
   const url = req.query.url as string;
@@ -24,6 +26,14 @@ export default async function mediaCaptions(req: Request, res: Response) {
   if (dbCaption) {
     return res.send(dbCaption.caption);
   }
+
+  if (inflightRequests.has(url)) {
+    console.log('HAS REQUEST');
+    await inflightRequests.get(url);
+  }
+
+  let dedupeResolver: (val?: Promise<any>) => void;
+  inflightRequests.set(url, new Promise(resolve => (dedupeResolver = resolve)));
 
   try {
     console.time('video-fetch');
@@ -56,6 +66,7 @@ export default async function mediaCaptions(req: Request, res: Response) {
     };
 
     console.time('generate-captions');
+
     // TODO change to `recognizeStream` api
     // and take duplex stream as arg
     const [response] = await client.recognize(request);
@@ -73,5 +84,8 @@ export default async function mediaCaptions(req: Request, res: Response) {
   } catch (error) {
     console.error(error);
     res.status(500).send(`Something went wrong\n${error}`);
+  } finally {
+    dedupeResolver!();
+    inflightRequests.delete(url);
   }
 }

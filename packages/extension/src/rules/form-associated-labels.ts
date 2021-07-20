@@ -1,5 +1,7 @@
 import { Context, Rule } from '../utils/traverser';
 
+const errorMessage = 'Form elements do not have associated labels';
+
 const formLabelRule = (
   node: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
   context: Context
@@ -8,13 +10,22 @@ const formLabelRule = (
 
   if (parentIsLabel) return;
 
+  if (!node.id) {
+    context.error({
+      node,
+      message: errorMessage,
+    });
+
+    return;
+  }
+
   const hasForLabel = document.querySelector(`label[for=${node.id}]`);
 
   if (hasForLabel) return;
 
   context.error({
     node,
-    message: 'Form elements do not have associated labels',
+    message: errorMessage,
   });
 };
 
