@@ -44,7 +44,7 @@ esbuild
         },
       },
     ],
-    minify: false,
+    minify: true,
     watch: true,
     loader: {
       '.png': 'file',

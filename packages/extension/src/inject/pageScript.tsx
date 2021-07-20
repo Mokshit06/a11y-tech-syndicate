@@ -95,6 +95,7 @@ function runTraverser() {
     ],
     name => ({
       error: payload => {
+        console.log('error', payload);
         postMessage({
           event: 'error',
           payload: { ...payload, name },

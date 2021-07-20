@@ -2,10 +2,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 import { useState } from 'react';
-import styles from '../styles/Home.module.css';
 
 export default function Home() {
   const [text, setText] = useState('');
+
   return (
     <div>
       {/* Some spanish text */}

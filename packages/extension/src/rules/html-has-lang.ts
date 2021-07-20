@@ -11,30 +11,34 @@ const htmlHasLang: Rule = {
 
       if (lang) return;
 
-      const langData = detectLanguage(node.innerText);
+      setTimeout(() => {
+        const langData = detectLanguage(node.innerText);
 
-      if (!langData) {
-        context.error({
+        console.log(node.innerText);
+
+        if (!langData) {
+          context.error({
+            node,
+            message: errorMessage,
+          });
+
+          return;
+        }
+
+        context.warn({
           node,
           message: errorMessage,
         });
 
-        return;
-      }
+        const { code, language } = langData;
 
-      context.warn({
-        node,
-        message: errorMessage,
-      });
+        node.setAttribute('lang', code);
 
-      const { code, language } = langData;
-
-      node.setAttribute('lang', code);
-
-      context.success({
-        node,
-        message: `\`${language}\` detected! <html> element [lang] attribute set to \`${code}\``,
-      });
+        context.success({
+          node,
+          message: `\`${language}\` detected! <html> element [lang] attribute set to \`${code}\``,
+        });
+      }, 50);
     },
   },
 };

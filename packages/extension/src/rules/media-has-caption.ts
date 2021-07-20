@@ -1,5 +1,5 @@
-import { Context, Rule } from '../utils/traverser';
 import { useCaptions } from '../devpanel/components/caption';
+import { Context, Rule } from '../utils/traverser';
 
 const errorMessage =
   'Media elements such as <audio> and <video> must have a <track> for captions.';
@@ -52,7 +52,7 @@ function appendTrackElement(node: MediaElement) {
   node.appendChild(text);
 }
 
-const mediaRule = (node: MediaElement, context: Context) => {
+function mediaRule(node: MediaElement, context: Context) {
   const muted = node.getAttribute('muted');
 
   if (muted === '') return;
@@ -97,13 +97,31 @@ const mediaRule = (node: MediaElement, context: Context) => {
 
     return;
   }
-};
+}
+
+function mediaObserverRule(node: MediaElement, context: Context) {
+  mediaRule(node, context);
+
+  const mutationObserver = new MutationObserver(mutations => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList') {
+        mediaRule(node, context);
+      }
+    }
+  });
+
+  mutationObserver.observe(node, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+  });
+}
 
 const mediaHasCaption: Rule = {
   name: 'media-has-capition',
   visitor: {
-    video: mediaRule,
-    audio: mediaRule,
+    video: mediaObserverRule,
+    audio: mediaObserverRule,
   },
 };
 
