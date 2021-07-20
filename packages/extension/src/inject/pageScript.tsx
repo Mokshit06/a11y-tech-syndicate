@@ -1,3 +1,6 @@
+import React from 'react';
+import { render } from 'preact/compat';
+import Caption from '../devpanel/components/caption';
 import altText from '../rules/alt-text';
 import documentHasTitle from '../rules/document-has-title';
 import formAssociatedLabels from '../rules/form-associated-labels';
@@ -10,6 +13,7 @@ import noAriaHiddenBody from '../rules/no-aria-hidden-body';
 import validLang from '../rules/valid-lang';
 import '../utils/add-event-listener';
 import { traverser } from '../utils/traverser';
+import './styles.css';
 
 declare global {
   interface Window {
@@ -75,15 +79,16 @@ function runTraverser() {
         name: 'append-caption',
         visitor: {
           body(node) {
-            let captionNode = node.querySelector('#caption-node-a11y');
+            let captionNode = node.querySelector('#a11y-caption-node');
             console.log(captionNode);
-            // if (!captionNode) {
-            //   const node = document.createElement('div');
-            //   node.id = 'caption-node-a11y';
-            //   node.appendChild(node);
-            //   captionNode = node;
-            // }
-            // render(<Caption />, captionNode);
+            if (!captionNode) {
+              const div = document.createElement('div');
+              div.id = 'a11y-caption-node';
+              node.appendChild(div);
+              captionNode = div;
+            }
+
+            render(<Caption />, captionNode);
           },
         },
       },

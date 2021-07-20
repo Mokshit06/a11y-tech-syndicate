@@ -7,6 +7,9 @@ export default async function convertToAudio(
 ) {
   return new Promise((resolve, reject) => {
     ffmpeg(readbleStream)
+      // set max time to 10s
+      // gcp max limit it 60min
+      .setDuration(10)
       .audioChannels(1)
       .format('flac')
       .on('end', () => {

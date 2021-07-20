@@ -20,6 +20,14 @@ export default async function imageDescription(req: Request, res: Response) {
     return res.send(dbDescription.description);
   }
 
+  const totalDescriptions = await prisma.description.count();
+
+  // should not process more than 30 images on a machine
+  // gcp max limit is 1000
+  if (totalDescriptions > 30) {
+    return res.status(403).send('Max limit reached');
+  }
+
   try {
     const { data: imageArrBuffer } = await axios.get(url, {
       responseType: 'arraybuffer',
