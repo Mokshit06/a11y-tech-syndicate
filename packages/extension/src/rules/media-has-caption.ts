@@ -15,7 +15,7 @@ function appendTrackElement(node: MediaElement) {
   const track = document.createElement('track');
   track.default = true;
   track.src = `${
-    import.meta.env.VITE_API_ENDPOINT
+    process.env.VITE_API_ENDPOINT
   }/captions?url=${encodeURIComponent(node.src)}`;
   track.kind = 'captions';
   track.srclang = 'en';
@@ -69,7 +69,7 @@ function mediaRule(node: MediaElement, context: Context) {
 
     appendTrackElement(node);
 
-    context.success({
+    context.fix({
       node,
       message: successMessage,
     });
@@ -90,7 +90,7 @@ function mediaRule(node: MediaElement, context: Context) {
 
     appendTrackElement(node);
 
-    context.success({
+    context.fix({
       node,
       message: successMessage,
     });

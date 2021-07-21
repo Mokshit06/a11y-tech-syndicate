@@ -1,6 +1,7 @@
 const esbuild = require('esbuild');
-
 const path = require('path');
+
+const isProd = process.env.NODE_ENV === 'production';
 
 const resolve = (...paths) => path.resolve(__dirname, '..', ...paths);
 
@@ -31,7 +32,7 @@ esbuild
     loader: {
       '.png': 'file',
     },
-    sourcemap: 'inline',
+    sourcemap: isProd ? false : 'inline',
     outdir: resolve('out'),
     plugins: [
       preactAlias,
@@ -44,16 +45,16 @@ esbuild
         },
       },
     ],
-    minify: true,
-    watch: true,
+    minify: isProd,
+    watch: !isProd,
     loader: {
       '.png': 'file',
     },
     define: {
-      'process.env.NODE_ENV': JSON.stringify('production'),
-      'import.meta.env.VITE_API_ENDPOINT': JSON.stringify(
-        'http://localhost:5000'
+      'process.env.NODE_ENV': JSON.stringify(
+        isProd ? 'production' : 'development'
       ),
+      'process.env.VITE_API_ENDPOINT': JSON.stringify('http://localhost:5000'),
     },
   })
   .catch(() => process.exit(1));

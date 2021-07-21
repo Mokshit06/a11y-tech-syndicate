@@ -17,7 +17,7 @@ const noAriaHiddenBody: Rule = {
 
         node.removeAttribute('aria-hidden');
 
-        context.success({
+        context.fix({
           node,
           message: successMessage,
         });

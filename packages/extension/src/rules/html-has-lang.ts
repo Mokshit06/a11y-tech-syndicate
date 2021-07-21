@@ -34,7 +34,7 @@ const htmlHasLang: Rule = {
 
         node.setAttribute('lang', code);
 
-        context.success({
+        context.fix({
           node,
           message: `\`${language}\` detected! <html> element [lang] attribute set to \`${code}\``,
         });

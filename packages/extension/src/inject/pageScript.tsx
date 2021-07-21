@@ -1,5 +1,5 @@
-import React from 'react';
 import { render } from 'preact/compat';
+import React from 'react';
 import Caption from '../devpanel/components/caption';
 import altText from '../rules/alt-text';
 import documentHasTitle from '../rules/document-has-title';
@@ -10,8 +10,11 @@ import linksDiscernableName from '../rules/links-discernible-name';
 import listContainsOnlyLi from '../rules/list-contains-only-li';
 import mediaHasCaption from '../rules/media-has-caption';
 import noAriaHiddenBody from '../rules/no-aria-hidden-body';
+import noTabindex from '../rules/no-tabindex';
 import validLang from '../rules/valid-lang';
+import viewportUserScalable from '../rules/viewport-user-scalable';
 import '../utils/add-event-listener';
+import nodeIdentifier from '../utils/node-identifier';
 import { traverser } from '../utils/traverser';
 import './styles.css';
 
@@ -32,7 +35,6 @@ function setListener(onMessage: (...args: any[]) => any, instanceId: any) {
 }
 
 function handleMessages(e: MessageEvent<any>) {
-  console.log(e.data);
   const message = e.data;
   if (!message || message.source !== '@devtools-extension') return;
 
@@ -42,18 +44,22 @@ function handleMessages(e: MessageEvent<any>) {
   });
 }
 
-function postMessage(payload: {
+function postMessage({
+  event,
+  payload,
+}: {
   event: string;
-  payload: { message: string; node: any; name: string };
+  payload: { message?: string; node?: any; name?: string };
 }) {
   window.postMessage(
     {
       source: '@devtools-page',
       payload: {
-        event: payload.event,
+        event: event,
         payload: {
-          message: payload.payload.message,
-          name: payload.payload.name,
+          message: payload.message,
+          name: payload.name,
+          node: payload.node && nodeIdentifier(payload.node),
         },
       },
     },
@@ -75,6 +81,8 @@ function runTraverser() {
       validLang,
       formAssociatedLabels,
       listContainsOnlyLi,
+      viewportUserScalable,
+      noTabindex,
       {
         name: 'append-caption',
         visitor: {
@@ -108,12 +116,14 @@ function runTraverser() {
           payload: { ...payload, name },
         });
       },
-      success: payload => {
+      fix: payload => {
         console.log('fix', payload);
         postMessage({ event: 'fix', payload: { ...payload, name } });
       },
     })
   );
+
+  postMessage({ event: 'end', payload: {} });
 }
 
 window.__A11Y_EXTENSION__ = {

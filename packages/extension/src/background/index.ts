@@ -21,6 +21,8 @@ function disconnect(
 
     const port = connection.get(id);
 
+    debugger;
+
     if (listener && port) port.onMessage.removeListener(listener);
     if (port) port.onDisconnect.removeListener(disconnectListener);
 
@@ -40,12 +42,16 @@ function relay(message: any, sender: chrome.runtime.MessageSender) {
     id: tabId,
   };
 
+  debugger;
+
   connections.panel.forEach(connection => {
     connection.postMessage(action);
   });
 }
 
 chrome.runtime.onConnect.addListener(port => {
+  debugger;
+
   if (port.name === 'content_script') {
     let id = getId(port.sender!);
 

@@ -13,9 +13,9 @@ function hasValue(value: any) {
 async function generateAltText(src: string) {
   try {
     const res = await fetch(
-      `${
-        import.meta.env.VITE_API_ENDPOINT
-      }/description?url=${encodeURIComponent(src)}`
+      `${process.env.VITE_API_ENDPOINT}/description?url=${encodeURIComponent(
+        src
+      )}`
     );
 
     if (!res.ok) throw new Error();
@@ -42,7 +42,7 @@ const imgRule = async (node: HTMLImageElement, context: Context) => {
       node.alt = '';
       node.removeAttribute('role');
 
-      context.success({
+      context.fix({
         node,
         message: `Generated alt text for ${node.src}`,
       });
@@ -97,7 +97,7 @@ const imgRule = async (node: HTMLImageElement, context: Context) => {
         message: `<img /> elements must have an alt prop, either with meaningful text, or an empty string for decorative images.`,
       });
 
-      context.success({
+      context.fix({
         node,
         message: `Generated a meaningful alt text!`,
       });

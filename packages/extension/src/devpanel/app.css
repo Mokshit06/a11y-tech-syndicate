@@ -1,4 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  background-color: white;
-  color: #0f0f0f;
+  --dark: #181c20;
+  --grey: #292d39;
+  color: #fefefe;
+  background: var(--dark);
+}
+
+.error-heading {
+  background: var(--grey);
+  padding: 10;
 }

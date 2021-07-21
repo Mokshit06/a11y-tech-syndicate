@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import create from 'zustand';
 import './caption.css';
 
@@ -33,8 +33,8 @@ export default function Caption() {
           dragConstraints={{ current: document.documentElement }}
           whileTap={{ scale: 0.98 }}
           className="a11y-audio-caption"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 50, scale: 0.7 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0 }}
           key="caption"
         >

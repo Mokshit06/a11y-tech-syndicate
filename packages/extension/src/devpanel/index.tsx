@@ -1,8 +1,13 @@
-import React from 'react';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { render } from 'preact/compat';
+import React from 'react';
 import App from './app';
-// // import '../utils/add-event-listener';
-// // import '../main.css';
+
+const theme = extendTheme({
+  config: {
+    initialColorMode: 'dark',
+  },
+});
 
 function renderPanel() {
   const node = document.getElementById('app');
@@ -11,7 +16,12 @@ function renderPanel() {
     throw new Error('`#app` node not found');
   }
 
-  render(<App />, node);
+  render(
+    <ChakraProvider theme={theme}>
+      <App />
+    </ChakraProvider>,
+    node
+  );
 }
 
 renderPanel();

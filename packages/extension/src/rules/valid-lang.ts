@@ -34,7 +34,7 @@ const validLang: Rule = {
 
       node.setAttribute('lang', langCode);
 
-      context.success({
+      context.fix({
         node,
         message: `<html> element [lang] attribute set to \`${langCode}\``,
       });

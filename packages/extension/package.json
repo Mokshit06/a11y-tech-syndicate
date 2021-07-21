@@ -3,22 +3,20 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "rm -rf out/* && node scripts/build",
-    "build": "tsc && vite build",
-    "serve": "vite preview",
-    "dev:web": "vite"
+    "build": "cross-env NODE_ENV=production node scripts/build"
   },
   "dependencies": {
+    "@chakra-ui/react": "^1.6.5",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
     "@vanilla-extract/css": "^1.1.0",
-    "framer-motion": "^4.1.17",
-    "jsan": "^3.1.13",
+    "framer-motion": "^4",
     "languagedetect": "^2.0.0",
     "preact": "^10.5.13",
     "zustand": "^3.5.7"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.0.0",
     "@types/chrome": "^0.0.146",
-    "@types/react": "^17.0.14",
-    "@vanilla-extract/vite-plugin": "^1.0.0"
+    "@types/react": "^17.0.14"
   }
 }

@@ -2,7 +2,7 @@ import '../li-reset.css';
 import { Context, Rule } from '../utils/traverser';
 
 const errorMessage =
-  'List does not contain only <li> elements and script supporting elements (<script> and <template>)';
+  'Lists do not contain only <li> elements and script supporting elements (<script> and <template>)';
 const getSuccessMessage = (name: string) => {
   return `<${name}> replaced with <li>`;
 };

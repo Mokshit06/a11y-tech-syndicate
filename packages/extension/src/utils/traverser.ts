@@ -3,7 +3,8 @@ import create from 'zustand';
 export type Context = {
   error: (error: { node: any; message: string }) => void;
   warn: (warning: { node: any; message: string }) => void;
-  success: (message: { node: any; message: string }) => void;
+  fix: (message: { node: any; message: string }) => void;
+  // pass: (message: { node: any; message: string }) => void;
 };
 
 export type VisitorNode<Node = Element> = (
@@ -11,11 +12,14 @@ export type VisitorNode<Node = Element> = (
   context: Context
 ) => void;
 
-export type Visitor = {
-  [K in keyof HTMLElementTagNameMap]?: VisitorNode<HTMLElementTagNameMap[K]>;
-} & {
-  [key: string]: VisitorNode<any>;
-};
+export type Visitor = Partial<
+  {
+    [K in keyof HTMLElementTagNameMap]: VisitorNode<HTMLElementTagNameMap[K]>;
+  } & {
+    ALL_ELEMENTS: VisitorNode<any>;
+    [key: string]: VisitorNode<any>;
+  }
+>;
 
 export type Rule = {
   name: string;
@@ -43,7 +47,7 @@ const defaultContext = (name: string): Context => ({
   warn: ({ node, message }) => {
     console.warn(`${name}: ${message}`, node);
   },
-  success: ({ node, message }) => {
+  fix: ({ node, message }) => {
     console.log(`%c${name}: ${message}`, SUCCESS_STYLE, node);
   },
 });
@@ -69,17 +73,22 @@ export function traverser(
   createContext: (name: string) => Context = defaultContext
 ) {
   console.time('traverse');
-  const contexts = new Map();
+  const contexts = new Map<string, Context>();
 
   function traverseNode(node: Element) {
     rules.forEach(rule => {
       const patch = rule.visitor[node.nodeName.toLowerCase() as keyof Rule];
+      const patchAll = rule.visitor.ALL_ELEMENTS;
+
+      const ctx = contexts.has(rule.name)
+        ? contexts.get(rule.name)!
+        : createContext(rule.name);
+
+      if (patchAll) {
+        patchAll(node as any, ctx);
+      }
 
       if (patch) {
-        const ctx = contexts.has(rule.name)
-          ? contexts.get(rule.name)
-          : createContext(rule.name);
-
         patch(node as any, ctx);
 
         contexts.set(rule.name, ctx);

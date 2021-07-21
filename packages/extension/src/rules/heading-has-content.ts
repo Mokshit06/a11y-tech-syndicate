@@ -40,7 +40,7 @@ const headingRule = (node: HTMLHeadingElement, context: Context) => {
 
     node.hidden = true;
 
-    context.success({
+    context.fix({
       node,
       message: successMessage,
     });
