@@ -22,6 +22,9 @@ declare global {
   interface Window {
     __A11Y_EXTENSION__: {
       run: any;
+      errors: HTMLElement[];
+      warnings: HTMLElement[];
+      fixes: HTMLElement[];
     };
   }
 }
@@ -103,21 +106,24 @@ function runTraverser() {
     ],
     name => ({
       error: payload => {
-        console.log('error', payload);
+        window.__A11Y_EXTENSION__.errors.push(payload.node);
+
         postMessage({
           event: 'error',
           payload: { ...payload, name },
         });
       },
       warn: payload => {
-        console.log('Warn', payload);
+        window.__A11Y_EXTENSION__.warnings.push(payload.node);
+
         postMessage({
           event: 'warn',
           payload: { ...payload, name },
         });
       },
       fix: payload => {
-        console.log('fix', payload);
+        window.__A11Y_EXTENSION__.fixes.push(payload.node);
+
         postMessage({ event: 'fix', payload: { ...payload, name } });
       },
     })
@@ -128,6 +134,9 @@ function runTraverser() {
 
 window.__A11Y_EXTENSION__ = {
   run: runTraverser,
+  errors: [],
+  warnings: [],
+  fixes: [],
 };
 
 window.__A11Y_EXTENSION__.run();

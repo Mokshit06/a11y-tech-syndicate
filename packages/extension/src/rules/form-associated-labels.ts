@@ -19,9 +19,11 @@ const formLabelRule = (
     return;
   }
 
-  const hasForLabel = document.querySelector(`label[for=${node.id}]`);
+  try {
+    const hasForLabel = document.querySelector(`label[for="${node.id}]"`);
 
-  if (hasForLabel) return;
+    if (hasForLabel) return;
+  } catch (error) {}
 
   context.error({
     node,

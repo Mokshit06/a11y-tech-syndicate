@@ -11,18 +11,23 @@ import {
   Stack,
   AlertDescription,
   AlertIcon,
+  AlertTitle,
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-type StringTuple = [string, string];
+type Message = {
+  node: string;
+  message: string;
+  rule: string;
+};
 
 type AccessibilityStats = {
-  errors: StringTuple[];
-  warnings: StringTuple[];
-  fixes: StringTuple[];
-  addError(error: StringTuple): void;
-  addWarning(warning: StringTuple): void;
-  addFix(fix: StringTuple): void;
+  errors: Message[];
+  warnings: Message[];
+  fixes: Message[];
+  addError(error: Message): void;
+  addWarning(warning: Message): void;
+  addFix(fix: Message): void;
   clear(): void;
 };
 
@@ -68,8 +73,10 @@ export default function App() {
   const { errors, fixes, warnings, addError, addFix, addWarning, clear } =
     useAccessibilityStats();
   const [hasTraversed, setHasTraversed] = useState(false);
-  const fixesPercentage = useMemo(() => {
+
+  const issuesFixed = useMemo(() => {
     if (!hasTraversed) return 0;
+
     return Math.floor(
       (fixes.length / (errors.length + warnings.length + fixes.length)) * 100
     );
@@ -78,12 +85,13 @@ export default function App() {
   const handleMessage = (data: any, port: chrome.runtime.Port) => {
     if (data.id !== id) return;
 
-    const { node, message } = data.message.payload.payload as Record<
-      string,
-      string
-    >;
+    const {
+      node,
+      message,
+      name: rule,
+    } = data.message.payload.payload as Record<string, string>;
 
-    const newMessage = [message, node] as StringTuple;
+    const newMessage: Message = { message, node, rule };
 
     switch (data?.message.payload.event) {
       case 'end': {
@@ -131,9 +139,9 @@ export default function App() {
   return (
     <Box>
       <Box>
-        <CircularProgress size={100} value={fixesPercentage} color="green.400">
+        <CircularProgress size={100} value={issuesFixed} color="green.400">
           <CircularProgressLabel>
-            {hasTraversed && fixesPercentage}
+            {hasTraversed && issuesFixed}
           </CircularProgressLabel>
         </CircularProgress>
       </Box>
@@ -151,7 +159,7 @@ function Section({
   status,
 }: {
   title: string;
-  messages: StringTuple[];
+  messages: Message[];
   status: 'error' | 'warning' | 'success';
 }) {
   return (
@@ -160,32 +168,52 @@ function Section({
         <Text fontSize="2xl">{title}</Text>
       </div>
       <Stack spacing={2}>
-        {messages.map(([message, node], index) => (
-          <Message key={index} message={message} status={status} node={node} />
+        {messages.map((message, index) => (
+          <Message
+            key={index}
+            index={index}
+            message={message}
+            status={status}
+          />
         ))}
       </Stack>
     </div>
   );
 }
 
+const statusToProperty = {
+  error: 'errors',
+  warning: 'warnings',
+  success: 'fixes',
+};
+
 function Message({
   message,
-  node,
   status,
+  index,
 }: {
-  message: string;
-  node: string;
+  message: Message;
+  index: number;
   status: 'error' | 'warning' | 'success';
 }) {
   const [isOpen, setOpen] = useState(false);
 
-  console.log({ node, message, status });
+  const handleInspect = () => {
+    chrome.devtools.inspectedWindow.eval(
+      // pageScript adds nodes to window
+      // (inspect(window.__A11Y_EXTENSION__.errors[0]))
+      `(inspect(window.__A11Y_EXTENSION__.${statusToProperty[status]}[${index}]))`
+    );
+  };
 
   return (
     <div>
       <Alert onClick={() => setOpen(!isOpen)} status={status}>
         <AlertIcon />
-        <AlertDescription>{message}</AlertDescription>
+        <AlertDescription>
+          <Text fontWeight="600">{message.rule}</Text>
+          {message.message}
+        </AlertDescription>
       </Alert>
       <AnimatePresence initial={false}>
         {isOpen && (
@@ -200,7 +228,7 @@ function Message({
             }}
             transition={{ duration: 0.2, ease: [0.04, 0.62, 0.23, 0.98] }}
           >
-            <Text>{node}</Text>
+            <Text onClick={handleInspect}>{message.node}</Text>
           </motion.section>
         )}
       </AnimatePresence>
