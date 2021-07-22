@@ -2,75 +2,22 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  AlertStatus,
   Box,
   Button,
   CircularProgress,
   CircularProgressLabel,
   Stack,
   Text,
-  AlertStatus,
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
-import create from 'zustand';
 
 type Message = {
   node: string;
   message: string;
   rule: string;
 };
-
-type AccessibilityStats = {
-  errors: Message[];
-  warnings: Message[];
-  fixes: Message[];
-  passed: Message[];
-  addError(error: Message): void;
-  addWarning(warning: Message): void;
-  addFix(pass: Message): void;
-  addPass(fix: Message): void;
-  clear(): void;
-};
-
-const useAccessibilityStats = create<AccessibilityStats>(set => ({
-  errors: [],
-  warnings: [],
-  fixes: [],
-  passed: [],
-  addError(error) {
-    set(state => ({
-      ...state,
-      errors: [...state.errors, error],
-    }));
-  },
-  addWarning(warning) {
-    set(state => ({
-      ...state,
-      warnings: [...state.warnings, warning],
-    }));
-  },
-  addPass(pass) {
-    set(state => ({
-      ...state,
-      passed: [...state.passed, pass],
-    }));
-  },
-  addFix(fix) {
-    set(state => ({
-      ...state,
-      fixes: [...state.fixes, fix],
-    }));
-  },
-  clear() {
-    set(state => ({
-      ...state,
-      errors: [],
-      warnings: [],
-      fixes: [],
-      passed: [],
-    }));
-  },
-}));
 
 const id = chrome.devtools.inspectedWindow.tabId;
 
@@ -79,17 +26,10 @@ const bgConnection = chrome.runtime.connect({
 });
 
 export default function App() {
-  const {
-    errors,
-    fixes,
-    warnings,
-    addError,
-    addFix,
-    addWarning,
-    clear,
-    addPass,
-    passed,
-  } = useAccessibilityStats();
+  const [errors, setErrors] = useState<Message[]>([]);
+  const [warnings, setWarnings] = useState<Message[]>([]);
+  const [fixes, setFixes] = useState<Message[]>([]);
+  const [passes, setPasses] = useState<Message[]>([]);
   const [hasTraversed, setHasTraversed] = useState(false);
   const totalIssues = errors.length + warnings.length;
 
@@ -98,8 +38,8 @@ export default function App() {
 
     if (totalIssues === 0) return 0;
 
-    return Math.round((passed.length / totalIssues + passed.length) * 100);
-  }, [totalIssues, hasTraversed, passed]);
+    return Math.round((passes.length / totalIssues + passes.length) * 100);
+  }, [totalIssues, hasTraversed, passes]);
 
   const unfixableErrors = useMemo(() => {
     if (!hasTraversed) return 0;
@@ -134,19 +74,19 @@ export default function App() {
         break;
       }
       case 'error': {
-        addError(newMessage);
+        setErrors([...errors, newMessage]);
         break;
       }
       case 'fix': {
-        addFix(newMessage);
+        setFixes([...fixes, newMessage]);
         break;
       }
       case 'warn': {
-        addWarning(newMessage);
+        setWarnings([...warnings, newMessage]);
         break;
       }
       case 'pass': {
-        addPass(newMessage);
+        setPasses([...passes, newMessage]);
         break;
       }
     }
@@ -162,7 +102,10 @@ export default function App() {
 
   const handleStart = (e: React.MouseEvent<HTMLButtonElement>) => {
     chrome.devtools.inspectedWindow.eval('window.location.reload()', () => {
-      clear();
+      setErrors([]);
+      setWarnings([]);
+      setFixes([]);
+      setPasses([]);
       setHasTraversed(false);
 
       bgConnection.postMessage({
@@ -199,7 +142,7 @@ export default function App() {
         </CircularProgress>
       </Box>
       <Button onClick={handleStart}>Start</Button>
-      <Section title="Passed" status="success" messages={passed} />
+      <Section title="Passed" status="success" messages={passes} />
       <Section title="Warnings" status="warning" messages={warnings} />
       <Section title="Errors" status="error" messages={errors} />
       <Section title="Fixes" status="info" messages={fixes} />
