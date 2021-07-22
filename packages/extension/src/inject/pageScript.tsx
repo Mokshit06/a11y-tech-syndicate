@@ -2,6 +2,7 @@ import { render } from 'preact/compat';
 import React from 'react';
 import Caption from '../devpanel/components/caption';
 import altText from '../rules/alt-text';
+import colorContrast from '../rules/color-contrast';
 import documentHasTitle from '../rules/document-has-title';
 import formAssociatedLabels from '../rules/form-associated-labels';
 import headingHasContent from '../rules/heading-has-content';
@@ -10,6 +11,7 @@ import linksDiscernableName from '../rules/links-discernible-name';
 import listContainsOnlyLi from '../rules/list-contains-only-li';
 import mediaHasCaption from '../rules/media-has-caption';
 import noAriaHiddenBody from '../rules/no-aria-hidden-body';
+import noRefresh from '../rules/no-refresh';
 import noTabindex from '../rules/no-tabindex';
 import validLang from '../rules/valid-lang';
 import viewportUserScalable from '../rules/viewport-user-scalable';
@@ -25,6 +27,7 @@ declare global {
       errors: HTMLElement[];
       warnings: HTMLElement[];
       fixes: HTMLElement[];
+      passed: HTMLElement[];
     };
   }
 }
@@ -86,12 +89,14 @@ function runTraverser() {
       listContainsOnlyLi,
       viewportUserScalable,
       noTabindex,
+      colorContrast,
+      noRefresh,
       {
         name: 'append-caption',
         visitor: {
           body(node) {
             let captionNode = node.querySelector('#a11y-caption-node');
-            console.log(captionNode);
+
             if (!captionNode) {
               const div = document.createElement('div');
               div.id = 'a11y-caption-node';
@@ -124,7 +129,18 @@ function runTraverser() {
       fix: payload => {
         window.__A11Y_EXTENSION__.fixes.push(payload.node);
 
-        postMessage({ event: 'fix', payload: { ...payload, name } });
+        postMessage({
+          event: 'fix',
+          payload: { ...payload, name },
+        });
+      },
+      pass: payload => {
+        window.__A11Y_EXTENSION__.passed.push(payload.node);
+
+        postMessage({
+          event: 'pass',
+          payload: { ...payload, name },
+        });
       },
     })
   );
@@ -137,6 +153,7 @@ window.__A11Y_EXTENSION__ = {
   errors: [],
   warnings: [],
   fixes: [],
+  passed: [],
 };
 
 window.__A11Y_EXTENSION__.run();

@@ -1,10 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axe from 'axe-core';
 
 export default function Home() {
   const [text, setText] = useState('');
+
+  useEffect(() => {
+    axe.run().then(result => {
+      console.log(result);
+    });
+  }, []);
 
   return (
     <div>
@@ -33,6 +40,12 @@ export default function Home() {
       <img
         src="https://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/article_thumbnails/other/cat_relaxing_on_patio_other/1800x1200_cat_relaxing_on_patio_other.jpg"
         height="500"
+      />
+      {/* Image with alt text */}
+      <img
+        src="https://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/article_thumbnails/other/cat_relaxing_on_patio_other/1800x1200_cat_relaxing_on_patio_other.jpg"
+        height="500"
+        alt="Cat"
       />
       {/* Video without track */}
       <video

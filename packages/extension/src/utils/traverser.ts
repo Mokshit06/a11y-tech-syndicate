@@ -1,10 +1,11 @@
 import create from 'zustand';
+import memoize from './memoize';
 
 export type Context = {
   error: (error: { node: any; message: string }) => void;
   warn: (warning: { node: any; message: string }) => void;
   fix: (message: { node: any; message: string }) => void;
-  // pass: (message: { node: any; message: string }) => void;
+  pass: (message: { node: any; message: string }) => void;
 };
 
 export type VisitorNode<Node = Element> = (
@@ -50,6 +51,9 @@ const defaultContext = (name: string): Context => ({
   fix: ({ node, message }) => {
     console.log(`%c${name}: ${message}`, SUCCESS_STYLE, node);
   },
+  pass: ({ node, message }) => {
+    console.log(`%c${name}: ${message}`, SUCCESS_STYLE, node);
+  },
 });
 
 // TODO change impl to maybe just traverse the nodes
@@ -72,26 +76,21 @@ export function traverser(
   rules: Rule[],
   createContext: (name: string) => Context = defaultContext
 ) {
+  const memCreateContext = memoize(createContext);
   console.time('traverse');
-  const contexts = new Map<string, Context>();
 
   function traverseNode(node: Element) {
     rules.forEach(rule => {
       const patch = rule.visitor[node.nodeName.toLowerCase() as keyof Rule];
       const patchAll = rule.visitor.ALL_ELEMENTS;
-
-      const ctx = contexts.has(rule.name)
-        ? contexts.get(rule.name)!
-        : createContext(rule.name);
+      const context = memCreateContext(rule.name);
 
       if (patchAll) {
-        patchAll(node as any, ctx);
+        patchAll(node as any, context);
       }
 
       if (patch) {
-        patch(node as any, ctx);
-
-        contexts.set(rule.name, ctx);
+        patch(node as any, context);
       }
     });
 

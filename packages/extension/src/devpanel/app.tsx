@@ -1,19 +1,18 @@
-import { style } from '@vanilla-extract/css';
-import React, { useEffect, useMemo, useState } from 'react';
-import create from 'zustand';
 import {
-  Button,
-  Box,
-  CircularProgress,
-  CircularProgressLabel,
   Alert,
-  Text,
-  Stack,
   AlertDescription,
   AlertIcon,
-  AlertTitle,
+  Box,
+  Button,
+  CircularProgress,
+  CircularProgressLabel,
+  Stack,
+  Text,
+  AlertStatus,
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useMemo, useState } from 'react';
+import create from 'zustand';
 
 type Message = {
   node: string;
@@ -25,9 +24,11 @@ type AccessibilityStats = {
   errors: Message[];
   warnings: Message[];
   fixes: Message[];
+  passed: Message[];
   addError(error: Message): void;
   addWarning(warning: Message): void;
-  addFix(fix: Message): void;
+  addFix(pass: Message): void;
+  addPass(fix: Message): void;
   clear(): void;
 };
 
@@ -35,6 +36,7 @@ const useAccessibilityStats = create<AccessibilityStats>(set => ({
   errors: [],
   warnings: [],
   fixes: [],
+  passed: [],
   addError(error) {
     set(state => ({
       ...state,
@@ -45,6 +47,12 @@ const useAccessibilityStats = create<AccessibilityStats>(set => ({
     set(state => ({
       ...state,
       warnings: [...state.warnings, warning],
+    }));
+  },
+  addPass(pass) {
+    set(state => ({
+      ...state,
+      passed: [...state.passed, pass],
     }));
   },
   addFix(fix) {
@@ -59,6 +67,7 @@ const useAccessibilityStats = create<AccessibilityStats>(set => ({
       errors: [],
       warnings: [],
       fixes: [],
+      passed: [],
     }));
   },
 }));
@@ -70,17 +79,43 @@ const bgConnection = chrome.runtime.connect({
 });
 
 export default function App() {
-  const { errors, fixes, warnings, addError, addFix, addWarning, clear } =
-    useAccessibilityStats();
+  const {
+    errors,
+    fixes,
+    warnings,
+    addError,
+    addFix,
+    addWarning,
+    clear,
+    addPass,
+    passed,
+  } = useAccessibilityStats();
   const [hasTraversed, setHasTraversed] = useState(false);
+  const totalIssues = errors.length + warnings.length;
+
+  const testsPassed = useMemo(() => {
+    if (!hasTraversed) return 0;
+
+    if (totalIssues === 0) return 0;
+
+    return Math.round((passed.length / totalIssues + passed.length) * 100);
+  }, [totalIssues, hasTraversed, passed]);
+
+  const unfixableErrors = useMemo(() => {
+    if (!hasTraversed) return 0;
+
+    if (totalIssues === 0) return 0;
+
+    return Math.round((errors.length / totalIssues) * 100);
+  }, [hasTraversed, totalIssues, errors]);
 
   const issuesFixed = useMemo(() => {
     if (!hasTraversed) return 0;
 
-    return Math.floor(
-      (fixes.length / (errors.length + warnings.length + fixes.length)) * 100
-    );
-  }, [errors, warnings, fixes, hasTraversed]);
+    if (totalIssues === 0) return 0;
+
+    return Math.round((fixes.length / totalIssues) * 100);
+  }, [fixes, hasTraversed, totalIssues]);
 
   const handleMessage = (data: any, port: chrome.runtime.Port) => {
     if (data.id !== id) return;
@@ -108,6 +143,10 @@ export default function App() {
       }
       case 'warn': {
         addWarning(newMessage);
+        break;
+      }
+      case 'pass': {
+        addPass(newMessage);
         break;
       }
     }
@@ -139,16 +178,31 @@ export default function App() {
   return (
     <Box>
       <Box>
+        <CircularProgress size={100} value={testsPassed} color="green.400">
+          <CircularProgressLabel>
+            {hasTraversed && testsPassed}
+          </CircularProgressLabel>
+        </CircularProgress>
+      </Box>
+      <Box>
         <CircularProgress size={100} value={issuesFixed} color="green.400">
           <CircularProgressLabel>
             {hasTraversed && issuesFixed}
           </CircularProgressLabel>
         </CircularProgress>
       </Box>
+      <Box>
+        <CircularProgress size={100} value={unfixableErrors} color="green.400">
+          <CircularProgressLabel>
+            {hasTraversed && unfixableErrors}
+          </CircularProgressLabel>
+        </CircularProgress>
+      </Box>
       <Button onClick={handleStart}>Start</Button>
-      <Section title="Errors" status="error" messages={errors} />
+      <Section title="Passed" status="success" messages={passed} />
       <Section title="Warnings" status="warning" messages={warnings} />
-      <Section title="Fixes" status="success" messages={fixes} />
+      <Section title="Errors" status="error" messages={errors} />
+      <Section title="Fixes" status="info" messages={fixes} />
     </Box>
   );
 }
@@ -160,7 +214,7 @@ function Section({
 }: {
   title: string;
   messages: Message[];
-  status: 'error' | 'warning' | 'success';
+  status: AlertStatus;
 }) {
   return (
     <div>
@@ -184,7 +238,8 @@ function Section({
 const statusToProperty = {
   error: 'errors',
   warning: 'warnings',
-  success: 'fixes',
+  success: 'passed',
+  info: 'fixes',
 };
 
 function Message({
@@ -194,7 +249,7 @@ function Message({
 }: {
   message: Message;
   index: number;
-  status: 'error' | 'warning' | 'success';
+  status: AlertStatus;
 }) {
   const [isOpen, setOpen] = useState(false);
 
