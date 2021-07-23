@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "start": "yarn workspace server start",
     "dev": "concurrently \"yarn extension\" \"yarn server\"",
     "build": "yarn workspaces run build",
     "extension": "yarn workspace extension dev",
