@@ -2,6 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "scripts": {
+    "start": "node dist",
     "build:dev": "node scripts/build",
     "build": "cross-env NODE_ENV=production node scripts/build",
     "dev": "yarn build && concurrently \"yarn build:dev\" \"nodemon --ignore dist/ --ext ts,js dist\""
