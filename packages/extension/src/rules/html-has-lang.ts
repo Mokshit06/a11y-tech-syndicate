@@ -9,36 +9,46 @@ const htmlHasLang: Rule = {
     html(node, context) {
       const lang = node.getAttribute('lang');
 
-      if (lang) return;
+      if (lang) {
+        context.pass({
+          node,
+          message: '<html> elements have the [lang] attribute.',
+        });
+      }
 
-      setTimeout(() => {
-        const langData = detectLanguage(node.innerText);
+      // setTimeout(() => {
 
-        console.log(node.innerText);
+      // `innerText` might be empty string
+      // if website is server rendered and is using react
+      // because react wouldn't be able to match server html
+      // and would cause rerender which would remove the nodes
+      const langData = detectLanguage(
+        node.innerText ? node.innerText : document.body.textContent!
+      );
 
-        if (!langData) {
-          context.error({
-            node,
-            message: errorMessage,
-          });
-
-          return;
-        }
-
-        context.warn({
+      if (!langData) {
+        context.error({
           node,
           message: errorMessage,
         });
 
-        const { code, language } = langData;
+        return;
+      }
 
-        node.setAttribute('lang', code);
+      context.warn({
+        node,
+        message: errorMessage,
+      });
 
-        context.fix({
-          node,
-          message: `\`${language}\` detected! <html> element [lang] attribute set to \`${code}\``,
-        });
-      }, 50);
+      const { code, language } = langData;
+
+      node.setAttribute('lang', code);
+
+      context.fix({
+        node,
+        message: `\`${language}\` detected! <html> element [lang] attribute set to \`${code}\``,
+      });
+      // }, 50);
     },
   },
 };

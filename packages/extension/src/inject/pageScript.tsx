@@ -144,8 +144,6 @@ function runTraverser() {
       },
     })
   );
-
-  postMessage({ event: 'end', payload: {} });
 }
 
 window.__A11Y_EXTENSION__ = {

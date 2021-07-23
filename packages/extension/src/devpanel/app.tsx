@@ -30,32 +30,32 @@ export default function App() {
   const [warnings, setWarnings] = useState<Message[]>([]);
   const [fixes, setFixes] = useState<Message[]>([]);
   const [passes, setPasses] = useState<Message[]>([]);
-  const [hasTraversed, setHasTraversed] = useState(false);
+  // const [hasTraversed, setHasTraversed] = useState(false);
   const totalIssues = errors.length + warnings.length;
 
   const testsPassed = useMemo(() => {
-    if (!hasTraversed) return 0;
+    // if (!hasTraversed) return 0;
 
     if (totalIssues === 0) return 0;
 
-    return Math.round((passes.length / totalIssues + passes.length) * 100);
-  }, [totalIssues, hasTraversed, passes]);
+    return Math.round((passes.length / (totalIssues + passes.length)) * 100);
+  }, [totalIssues, passes]);
 
   const unfixableErrors = useMemo(() => {
-    if (!hasTraversed) return 0;
+    // if (!hasTraversed) return 0;
 
     if (totalIssues === 0) return 0;
 
     return Math.round((errors.length / totalIssues) * 100);
-  }, [hasTraversed, totalIssues, errors]);
+  }, [totalIssues, errors]);
 
   const issuesFixed = useMemo(() => {
-    if (!hasTraversed) return 0;
+    // if (!hasTraversed) return 0;
 
     if (totalIssues === 0) return 0;
 
     return Math.round((fixes.length / totalIssues) * 100);
-  }, [fixes, hasTraversed, totalIssues]);
+  }, [fixes, totalIssues]);
 
   const handleMessage = (data: any, port: chrome.runtime.Port) => {
     if (data.id !== id) return;
@@ -69,10 +69,10 @@ export default function App() {
     const newMessage: Message = { message, node, rule };
 
     switch (data?.message.payload.event) {
-      case 'end': {
-        setHasTraversed(true);
-        break;
-      }
+      // case 'end': {
+      //   setHasTraversed(true);
+      //   break;
+      // }
       case 'error': {
         setErrors([...errors, newMessage]);
         break;
@@ -106,7 +106,7 @@ export default function App() {
       setWarnings([]);
       setFixes([]);
       setPasses([]);
-      setHasTraversed(false);
+      // setHasTraversed(false);
 
       bgConnection.postMessage({
         source: '@devtools-extension',
@@ -118,34 +118,24 @@ export default function App() {
     });
   };
 
+  // if (!hasTraversed) {
+  //   return (
+  //     <Box>
+  //       <Button onClick={handleStart}>Start</Button>
+  //     </Box>
+  //   );
+  // }
+
   return (
     <Box>
-      <Box>
-        <CircularProgress size={100} value={testsPassed} color="green.400">
-          <CircularProgressLabel>
-            {hasTraversed && testsPassed}
-          </CircularProgressLabel>
-        </CircularProgress>
-      </Box>
-      <Box>
-        <CircularProgress size={100} value={issuesFixed} color="green.400">
-          <CircularProgressLabel>
-            {hasTraversed && issuesFixed}
-          </CircularProgressLabel>
-        </CircularProgress>
-      </Box>
-      <Box>
-        <CircularProgress size={100} value={unfixableErrors} color="green.400">
-          <CircularProgressLabel>
-            {hasTraversed && unfixableErrors}
-          </CircularProgressLabel>
-        </CircularProgress>
-      </Box>
-      <Button onClick={handleStart}>Start</Button>
-      <Section title="Passed" status="success" messages={passes} />
-      <Section title="Warnings" status="warning" messages={warnings} />
+      <Progress value={testsPassed} color="green.400" />
+      <Progress value={issuesFixed} color="blue.300" />
+      <Progress value={unfixableErrors} color="red.400" />
+      <Button onClick={handleStart}>Restart</Button>
       <Section title="Errors" status="error" messages={errors} />
+      {/* <Section title="Warnings" status="warning" messages={warnings} /> */}
       <Section title="Fixes" status="info" messages={fixes} />
+      <Section title="Passing" status="success" messages={passes} />
     </Box>
   );
 }
@@ -231,5 +221,15 @@ function Message({
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function Progress({ value, color }: { value: number; color: string }) {
+  return (
+    <Box>
+      <CircularProgress size={100} value={value} color={color}>
+        <CircularProgressLabel>{value}</CircularProgressLabel>
+      </CircularProgress>
+    </Box>
   );
 }

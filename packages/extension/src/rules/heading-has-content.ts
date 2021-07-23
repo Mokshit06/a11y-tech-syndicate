@@ -26,7 +26,6 @@ const headingRule = (node: HTMLHeadingElement, context: Context) => {
   });
 
   if (!node.innerText) {
-    console.log(node.innerText, node.innerHTML, node);
     context.warn({
       message: errorMessage,
       node,

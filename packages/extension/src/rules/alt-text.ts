@@ -13,9 +13,7 @@ function hasValue(value: any) {
 async function generateAltText(src: string) {
   try {
     const res = await fetch(
-      `${process.env.VITE_API_ENDPOINT}/description?url=${encodeURIComponent(
-        src
-      )}`
+      `${process.env.API_ENDPOINT}/description?url=${encodeURIComponent(src)}`
     );
 
     if (!res.ok) throw new Error();
@@ -31,7 +29,10 @@ async function generateAltText(src: string) {
 const imgRule = async (node: HTMLImageElement, context: Context) => {
   const alt = node.getAttribute('alt');
 
+  console.log('TRAVERSING IMAGE NODE');
+
   if (alt !== null) {
+    console.log(node);
     context.pass({
       node,
       message: '<img> elements have [alt] attributes',
@@ -126,6 +127,14 @@ const altText: Rule = {
       const mutationObserver = new MutationObserver(mutations => {
         for (const mutation of mutations) {
           if (mutation.type === 'attributes') {
+            // was added by this rule
+            if (
+              mutation.attributeName === 'alt' &&
+              mutation.oldValue === null
+            ) {
+              continue;
+            }
+
             imgRule(node, context);
           }
         }
@@ -133,6 +142,7 @@ const altText: Rule = {
 
       mutationObserver.observe(node, {
         attributes: true,
+        attributeOldValue: true,
       });
     },
     object(node, context) {

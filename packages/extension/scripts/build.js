@@ -1,5 +1,8 @@
 const esbuild = require('esbuild');
 const path = require('path');
+const dotenv = require('dotenv-flow');
+
+dotenv.config();
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -50,11 +53,12 @@ esbuild
     loader: {
       '.png': 'file',
     },
-    define: {
-      'process.env.NODE_ENV': JSON.stringify(
-        isProd ? 'production' : 'development'
-      ),
-      'process.env.VITE_API_ENDPOINT': JSON.stringify('http://localhost:5000'),
-    },
+    define: Object.fromEntries(
+      Object.entries(process.env)
+        // ignore windows specific process.env like ProgramFiles(x86)
+        .filter(([env]) => !env.includes('(') && !env.includes(')'))
+        // stringify values
+        .map(([env, value]) => [`process.env.${env}`, JSON.stringify(value)])
+    ),
   })
   .catch(() => process.exit(1));

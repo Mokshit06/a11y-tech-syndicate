@@ -1,4 +1,5 @@
 import { useCaptions } from '../devpanel/components/caption';
+import isReact from '../utils/is-react';
 import { Context, Rule } from '../utils/traverser';
 
 const errorMessage =
@@ -14,9 +15,9 @@ function appendTrackElement(node: MediaElement) {
 
   const track = document.createElement('track');
   track.default = true;
-  track.src = `${
-    process.env.VITE_API_ENDPOINT
-  }/captions?url=${encodeURIComponent(node.src)}`;
+  track.src = `${process.env.API_ENDPOINT}/captions?url=${encodeURIComponent(
+    node.src
+  )}`;
   track.kind = 'captions';
   track.srclang = 'en';
 
@@ -97,7 +98,14 @@ function mediaRule(node: MediaElement, context: Context) {
 
     return;
   }
+
+  context.pass({
+    message: '',
+    node,
+  });
 }
+
+const noop = () => {};
 
 function mediaObserverRule(node: MediaElement, context: Context) {
   mediaRule(node, context);
@@ -105,7 +113,16 @@ function mediaObserverRule(node: MediaElement, context: Context) {
   const mutationObserver = new MutationObserver(mutations => {
     for (const mutation of mutations) {
       if (mutation.type === 'childList') {
-        mediaRule(node, context);
+        // don't report issues to panel
+        // this would usually be called only
+        // when react reconciles dom and removes
+        // the track element
+        mediaRule(node, {
+          error: noop,
+          fix: noop,
+          pass: noop,
+          warn: noop,
+        });
       }
     }
   });
