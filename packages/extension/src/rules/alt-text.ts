@@ -29,10 +29,7 @@ async function generateAltText(src: string) {
 const imgRule = async (node: HTMLImageElement, context: Context) => {
   const alt = node.getAttribute('alt');
 
-  console.log('TRAVERSING IMAGE NODE');
-
   if (alt !== null) {
-    console.log(node);
     context.pass({
       node,
       message: '<img> elements have [alt] attributes',

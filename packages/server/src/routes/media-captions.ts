@@ -7,8 +7,11 @@ import prisma from '../lib/prisma';
 import AudioWritableStream from '../utils/audio-writable-stream';
 import convertToAudio from '../utils/convert-to-audio';
 import generateWebVTT from '../utils/generate-web-vtt';
+import credentials from '../utils/google-credentials';
 
-const client = new SpeechClient();
+const client = new SpeechClient({
+  credentials,
+});
 
 const inflightRequests = new Map<string, Promise<any>>();
 
@@ -28,7 +31,7 @@ export default async function mediaCaptions(req: Request, res: Response) {
   }
 
   if (inflightRequests.has(url)) {
-    console.log('HAS REQUEST');
+    console.log('CONCURRENT REQUEST');
     await inflightRequests.get(url);
   }
 

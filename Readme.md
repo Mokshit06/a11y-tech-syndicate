@@ -1,5 +1,12 @@
 # a11y
 
+## Requirements
+
+- yarn
+- node
+- postgres
+- chrome
+
 ## Setup
 
 1. Install the dependencies.
@@ -17,10 +24,12 @@ cp packages/server/.env.local packages/server/.env
 
 3. Create google service account and add Speech-to-Text and Vision API to the libaries.
 
-4. Add the path of the `json` file downloaded in `packages/server/.env`
+4. Add the path of the `private_key`, `client_email` and `client_id` from the json file downloaded in `packages/server/.env`
 
 ```bash
-GOOGLE_APPLICATION_CREDENTIALS="path/to/json"
+GOOGLE_PRIVATE_KEY="..."
+GOOGLE_CLIENT_EMAIL="..."
+GOOGLE_CLIENT_ID="..."
 ```
 
 5. Create database and run migrations.

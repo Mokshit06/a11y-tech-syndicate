@@ -7,15 +7,12 @@ let bg: chrome.runtime.Port | undefined;
 type TODO = any;
 
 function connect() {
-  console.log('CONNECTING');
   connected = true;
 
   bg = chrome.runtime.connect({ name: 'content_script' });
 
   bg.onMessage.addListener(message => {
     debugger;
-
-    console.log(message);
 
     if (message?.event === 'traverse') {
       window.postMessage(

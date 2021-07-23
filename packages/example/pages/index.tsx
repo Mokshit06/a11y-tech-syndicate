@@ -2,16 +2,9 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 import { useEffect, useState } from 'react';
-import axe from 'axe-core';
 
 export default function Home() {
   const [text, setText] = useState('');
-
-  useEffect(() => {
-    axe.run().then(result => {
-      console.log(result);
-    });
-  }, []);
 
   return (
     <div>

@@ -74,7 +74,6 @@ chrome.runtime.onConnect.addListener(port => {
 
     const listener = (message: any) => {
       if (message.payload.event === 'start') {
-        console.log('LISTENER', message);
         connections.tab.get(id)?.postMessage({
           event: 'traverse',
         });

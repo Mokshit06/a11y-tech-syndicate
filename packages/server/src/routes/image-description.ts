@@ -2,8 +2,11 @@ import type { Request, Response } from 'express';
 import { ImageAnnotatorClient } from '@google-cloud/vision';
 import axios from 'axios';
 import prisma from '../lib/prisma';
+import credentials from '../utils/google-credentials';
 
-const client = new ImageAnnotatorClient();
+const client = new ImageAnnotatorClient({
+  credentials,
+});
 
 export default async function imageDescription(req: Request, res: Response) {
   const url = req.query.url as string;
