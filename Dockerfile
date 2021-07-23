@@ -10,7 +10,7 @@ RUN yarn install
 
 COPY . .
 
-RUN yarn build
+RUN yarn server:build
 
 ENV NODE_ENV production
 
