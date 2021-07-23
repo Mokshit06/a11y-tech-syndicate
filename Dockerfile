@@ -10,6 +10,9 @@ RUN yarn install
 
 COPY . .
 
+RUN yarn prisma migrate deploy
+RUN yarn prisma generate
+
 RUN yarn server:build
 
 ENV NODE_ENV production
