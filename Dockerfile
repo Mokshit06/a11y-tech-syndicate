@@ -17,6 +17,4 @@ RUN yarn server:build
 
 ENV NODE_ENV production
 
-EXPOSE 8000
-
 CMD ["yarn", "start"]
