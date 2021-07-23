@@ -27,18 +27,30 @@ export type Rule = {
   visitor: Visitor;
 };
 
-const SUCCESS_STYLE = `
-  background-color: rgba(38, 252, 59, 0.5);
+const commonStyles = `
   color: white;
   padding: 3px 5px;
   margin: 10px 0px 7px 0px;
 `;
 
+const SUCCESS_STYLE = `
+  background-color: rgba(38, 252, 59, 0.5);
+  ${commonStyles}
+`;
+
 const ERROR_STYLE = `
   background-color: rgba(255, 0, 0, 0.7);
-  color: white;
-  padding: 3px 5px;
-  margin: 10px 0px 7px 0px;
+  ${commonStyles}
+`;
+
+const WARNING_STYLE = `
+  background-color: rgba(255, 187, 0, 0.8);
+  ${commonStyles}
+`;
+
+const FIX_STYLE = `
+  background-color: rgba(0, 183, 255, 0.8);
+  ${commonStyles}
 `;
 
 const defaultContext = (name: string): Context => ({
@@ -46,10 +58,10 @@ const defaultContext = (name: string): Context => ({
     console.log(`%c${name}: ${message}`, ERROR_STYLE, node);
   },
   warn: ({ node, message }) => {
-    console.warn(`${name}: ${message}`, node);
+    console.log(`%c${name}: ${message}`, WARNING_STYLE, node);
   },
   fix: ({ node, message }) => {
-    console.log(`%c${name}: ${message}`, SUCCESS_STYLE, node);
+    console.log(`%c${name}: ${message}`, FIX_STYLE, node);
   },
   pass: ({ node, message }) => {
     console.log(`%c${name}: ${message}`, SUCCESS_STYLE, node);

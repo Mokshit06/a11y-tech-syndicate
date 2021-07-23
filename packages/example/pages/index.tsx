@@ -25,7 +25,8 @@ export default function Home() {
           type="text"
         />
       </form>
-      <ul>
+      {/* className for devpanel */}
+      <ul className="my-ul">
         {/* List with paragraph child instead of list item */}
         <p
           aria-label="Some label"

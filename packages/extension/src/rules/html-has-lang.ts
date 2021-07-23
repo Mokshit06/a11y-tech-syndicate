@@ -23,7 +23,7 @@ const htmlHasLang: Rule = {
       // because react wouldn't be able to match server html
       // and would cause rerender which would remove the nodes
       const langData = detectLanguage(
-        node.innerText ? node.innerText : document.body.textContent!
+        node.innerText ? node.innerText : document.body?.textContent!
       );
 
       if (!langData) {

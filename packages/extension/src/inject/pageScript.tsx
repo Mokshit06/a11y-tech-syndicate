@@ -17,7 +17,7 @@ import validLang from '../rules/valid-lang';
 import viewportUserScalable from '../rules/viewport-user-scalable';
 import '../utils/add-event-listener';
 import nodeIdentifier from '../utils/node-identifier';
-import { traverser } from '../utils/traverser';
+import { Context, traverser } from '../utils/traverser';
 import './styles.css';
 
 declare global {
@@ -57,20 +57,61 @@ function postMessage({
   event: string;
   payload: { message?: string; node?: any; name?: string };
 }) {
-  window.postMessage(
-    {
-      source: '@devtools-page',
-      payload: {
-        event: event,
+  try {
+    window.postMessage(
+      {
+        source: '@devtools-page',
         payload: {
-          message: payload.message,
-          name: payload.name,
-          node: payload.node && nodeIdentifier(payload.node),
+          event: event,
+          payload: {
+            message: payload.message,
+            name: payload.name,
+            node: payload.node && nodeIdentifier(payload.node),
+          },
         },
       },
+      '*'
+    );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function createContext(name: string): Context {
+  return {
+    error(payload) {
+      window.__A11Y_EXTENSION__.errors.push(payload.node);
+
+      postMessage({
+        event: 'error',
+        payload: { ...payload, name },
+      });
     },
-    '*'
-  );
+    warn(payload) {
+      window.__A11Y_EXTENSION__.warnings.push(payload.node);
+
+      postMessage({
+        event: 'warn',
+        payload: { ...payload, name },
+      });
+    },
+    fix(payload) {
+      window.__A11Y_EXTENSION__.fixes.push(payload.node);
+
+      postMessage({
+        event: 'fix',
+        payload: { ...payload, name },
+      });
+    },
+    pass(payload) {
+      window.__A11Y_EXTENSION__.passed.push(payload.node);
+
+      postMessage({
+        event: 'pass',
+        payload: { ...payload, name },
+      });
+    },
+  };
 }
 
 function runTraverser() {
@@ -109,45 +150,15 @@ function runTraverser() {
         },
       },
     ],
-    name => ({
-      error: payload => {
-        window.__A11Y_EXTENSION__.errors.push(payload.node);
-
-        postMessage({
-          event: 'error',
-          payload: { ...payload, name },
-        });
-      },
-      warn: payload => {
-        window.__A11Y_EXTENSION__.warnings.push(payload.node);
-
-        postMessage({
-          event: 'warn',
-          payload: { ...payload, name },
-        });
-      },
-      fix: payload => {
-        window.__A11Y_EXTENSION__.fixes.push(payload.node);
-
-        postMessage({
-          event: 'fix',
-          payload: { ...payload, name },
-        });
-      },
-      pass: payload => {
-        window.__A11Y_EXTENSION__.passed.push(payload.node);
-
-        postMessage({
-          event: 'pass',
-          payload: { ...payload, name },
-        });
-      },
-    })
+    createContext
   );
 }
 
 window.__A11Y_EXTENSION__ = {
-  run: runTraverser,
+  run: () => {
+    // delay 1s for client side rendering
+    setTimeout(() => runTraverser(), 1000);
+  },
   errors: [],
   warnings: [],
   fixes: [],

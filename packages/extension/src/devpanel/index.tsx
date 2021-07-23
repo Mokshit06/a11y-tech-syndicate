@@ -2,6 +2,7 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { render } from 'preact/compat';
 import React from 'react';
 import App from './app';
+import './app.css';
 
 const theme = extendTheme({
   config: {

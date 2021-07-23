@@ -7,6 +7,8 @@ import {
   Button,
   CircularProgress,
   CircularProgressLabel,
+  Flex,
+  HStack,
   Stack,
   Text,
 } from '@chakra-ui/react';
@@ -30,28 +32,22 @@ export default function App() {
   const [warnings, setWarnings] = useState<Message[]>([]);
   const [fixes, setFixes] = useState<Message[]>([]);
   const [passes, setPasses] = useState<Message[]>([]);
-  // const [hasTraversed, setHasTraversed] = useState(false);
+  const [hasTraversed, setHasTraversed] = useState(false);
   const totalIssues = errors.length + warnings.length;
 
   const testsPassed = useMemo(() => {
-    // if (!hasTraversed) return 0;
-
     if (totalIssues === 0) return 0;
 
     return Math.round((passes.length / (totalIssues + passes.length)) * 100);
   }, [totalIssues, passes]);
 
   const unfixableErrors = useMemo(() => {
-    // if (!hasTraversed) return 0;
-
     if (totalIssues === 0) return 0;
 
     return Math.round((errors.length / totalIssues) * 100);
   }, [totalIssues, errors]);
 
   const issuesFixed = useMemo(() => {
-    // if (!hasTraversed) return 0;
-
     if (totalIssues === 0) return 0;
 
     return Math.round((fixes.length / totalIssues) * 100);
@@ -69,24 +65,20 @@ export default function App() {
     const newMessage: Message = { message, node, rule };
 
     switch (data?.message.payload.event) {
-      // case 'end': {
-      //   setHasTraversed(true);
-      //   break;
-      // }
       case 'error': {
-        setErrors([...errors, newMessage]);
+        setErrors(errors => [...errors, newMessage]);
         break;
       }
       case 'fix': {
-        setFixes([...fixes, newMessage]);
+        setFixes(fixes => [...fixes, newMessage]);
         break;
       }
       case 'warn': {
-        setWarnings([...warnings, newMessage]);
+        setWarnings(warnings => [...warnings, newMessage]);
         break;
       }
       case 'pass': {
-        setPasses([...passes, newMessage]);
+        setPasses(passes => [...passes, newMessage]);
         break;
       }
     }
@@ -101,70 +93,105 @@ export default function App() {
   });
 
   const handleStart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    chrome.devtools.inspectedWindow.eval('window.location.reload()', () => {
-      setErrors([]);
-      setWarnings([]);
-      setFixes([]);
-      setPasses([]);
-      // setHasTraversed(false);
+    chrome.devtools.inspectedWindow.reload({});
+    setErrors([]);
+    setWarnings([]);
+    setFixes([]);
+    setPasses([]);
+    setHasTraversed(true);
 
-      bgConnection.postMessage({
-        source: '@devtools-extension',
-        payload: {
-          event: 'start',
-          payload: undefined,
-        },
-      });
+    bgConnection.postMessage({
+      source: '@devtools-extension',
+      payload: {
+        event: 'start',
+        payload: undefined,
+      },
     });
   };
 
-  // if (!hasTraversed) {
-  //   return (
-  //     <Box>
-  //       <Button onClick={handleStart}>Start</Button>
-  //     </Box>
-  //   );
-  // }
+  const issuesFixedProgress = (
+    <Progress href="#info" title="Fixes" value={issuesFixed} color="blue.300" />
+  );
+  const testsPassedProgress = (
+    <Progress
+      href="#success"
+      title="Passing"
+      value={testsPassed}
+      color="green.400"
+    />
+  );
+  const unfixableErrorsProgress = (
+    <Progress
+      href="#error"
+      title="Errors"
+      value={unfixableErrors}
+      color="red.400"
+    />
+  );
 
   return (
     <Box>
-      <Progress value={testsPassed} color="green.400" />
-      <Progress value={issuesFixed} color="blue.300" />
-      <Progress value={unfixableErrors} color="red.400" />
-      <Button onClick={handleStart}>Restart</Button>
-      <Section title="Errors" status="error" messages={errors} />
-      {/* <Section title="Warnings" status="warning" messages={warnings} /> */}
-      <Section title="Fixes" status="info" messages={fixes} />
-      <Section title="Passing" status="success" messages={passes} />
+      <HStack py="20px" fontSize="xl" justifyContent="center">
+        {unfixableErrorsProgress}
+        {issuesFixedProgress}
+        {testsPassedProgress}
+      </HStack>
+      <Flex w="100%" direction="column">
+        <Button my="14px" w="fit-content" mx="auto" onClick={handleStart}>
+          {hasTraversed ? 'Restart' : 'Start'}
+        </Button>
+        <Section
+          status="error"
+          progress={unfixableErrorsProgress}
+          messages={errors}
+        />
+        {/* <Section title="Warnings" status="warning" messages={warnings} /> */}
+        <Section
+          status="info"
+          progress={issuesFixedProgress}
+          messages={fixes}
+        />
+        <Section
+          status="success"
+          progress={testsPassedProgress}
+          messages={passes}
+        />
+      </Flex>
     </Box>
   );
 }
 
 function Section({
-  title,
   messages,
   status,
+  progress,
 }: {
-  title: string;
   messages: Message[];
   status: AlertStatus;
+  progress: React.ReactElement;
 }) {
+  const href = `#${status}`;
+
   return (
-    <div>
-      <div>
-        <Text fontSize="2xl">{title}</Text>
-      </div>
-      <Stack spacing={2}>
-        {messages.map((message, index) => (
-          <Message
-            key={index}
-            index={index}
-            message={message}
-            status={status}
-          />
-        ))}
-      </Stack>
-    </div>
+    <Box id={href} borderTop="1px" borderColor="gray.700">
+      <Box padding="12px" maxW="calc(60 * 12px)" m="0 auto">
+        <Box fontSize="2xl" mb="8px">
+          <Box maxW="400px" w="auto" m="0px auto">
+            {progress}
+          </Box>
+        </Box>
+        <Stack spacing={3}>
+          {messages.map((message, index) => (
+            <Message
+              key={index}
+              index={index}
+              message={message}
+              status={status}
+            />
+          ))}
+        </Stack>
+      </Box>
+    </Box>
   );
 }
 
@@ -196,7 +223,7 @@ function Message({
 
   return (
     <div>
-      <Alert onClick={() => setOpen(!isOpen)} status={status}>
+      <Alert cursor="pointer" onClick={() => setOpen(!isOpen)} status={status}>
         <AlertIcon />
         <AlertDescription>
           <Text fontWeight="600">{message.rule}</Text>
@@ -205,31 +232,64 @@ function Message({
       </Alert>
       <AnimatePresence initial={false}>
         {isOpen && (
-          <motion.section
+          <motion.div
             key="content"
             initial="collapsed"
             exit="collapsed"
             animate="open"
             variants={{
-              open: { opacity: 1, height: 'auto' },
-              collapsed: { opacity: 0, height: 0 },
+              open: {
+                opacity: 1,
+                height: 'auto',
+              },
+              collapsed: {
+                opacity: 0,
+                height: 0,
+              },
             }}
-            transition={{ duration: 0.2, ease: [0.04, 0.62, 0.23, 0.98] }}
+            transition={{ duration: 0.2, ease: [0.04, 0.6, 0.2, 0.9] }}
           >
-            <Text onClick={handleInspect}>{message.node}</Text>
-          </motion.section>
+            <Box background="gray.700" p="10px 12px">
+              <Text
+                cursor="pointer"
+                fontFamily="monospace"
+                fontSize="12px"
+                onClick={handleInspect}
+              >
+                {message.node}
+              </Text>
+            </Box>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
 }
 
-function Progress({ value, color }: { value: number; color: string }) {
+function Progress({
+  value,
+  color,
+  title,
+  href,
+}: {
+  value: number;
+  color: string;
+  title: string;
+  href: string;
+}) {
   return (
-    <Box>
+    <Flex
+      as="a"
+      direction="column"
+      align="center"
+      href={href}
+      textDecor="none"
+      p="8px"
+    >
       <CircularProgress size={100} value={value} color={color}>
         <CircularProgressLabel>{value}</CircularProgressLabel>
       </CircularProgress>
-    </Box>
+      <Text marginTop="14px">{title}</Text>
+    </Flex>
   );
 }
