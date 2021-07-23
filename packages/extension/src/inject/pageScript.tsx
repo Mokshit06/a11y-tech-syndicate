@@ -15,7 +15,6 @@ import noRefresh from '../rules/no-refresh';
 import noTabindex from '../rules/no-tabindex';
 import validLang from '../rules/valid-lang';
 import viewportUserScalable from '../rules/viewport-user-scalable';
-import '../utils/add-event-listener';
 import nodeIdentifier from '../utils/node-identifier';
 import { Context, traverser } from '../utils/traverser';
 import './styles.css';
@@ -33,12 +32,6 @@ declare global {
 }
 
 const listeners = new Map();
-
-function setListener(onMessage: (...args: any[]) => any, instanceId: any) {
-  listeners.set(instanceId, onMessage);
-
-  // window.addEventListener('message', handleMessages, false);
-}
 
 function handleMessages(e: MessageEvent<any>) {
   const message = e.data;

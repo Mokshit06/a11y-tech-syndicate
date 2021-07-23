@@ -1,6 +1,7 @@
 import { Rule } from '../utils/traverser';
 
 const errorMessage = 'document should have <title> element';
+const successMessage = 'document has <title> element';
 
 const documentHasTitle: Rule = {
   name: 'document-has-title',
@@ -15,7 +16,14 @@ const documentHasTitle: Rule = {
           node,
           message: errorMessage,
         });
+
+        return;
       }
+
+      context.pass({
+        node,
+        message: successMessage,
+      });
     },
   },
 };

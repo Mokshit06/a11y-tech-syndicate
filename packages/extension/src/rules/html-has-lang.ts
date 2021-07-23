@@ -14,9 +14,9 @@ const htmlHasLang: Rule = {
           node,
           message: '<html> elements have the [lang] attribute.',
         });
-      }
 
-      // setTimeout(() => {
+        return;
+      }
 
       // `innerText` might be empty string
       // if website is server rendered and is using react
@@ -48,7 +48,6 @@ const htmlHasLang: Rule = {
         node,
         message: `\`${language}\` detected! <html> element [lang] attribute set to \`${code}\``,
       });
-      // }, 50);
     },
   },
 };

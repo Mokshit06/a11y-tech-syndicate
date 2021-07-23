@@ -3,6 +3,7 @@ import langToCode from '../utils/lang-to-code';
 import codeToLang from '../utils/code-to-lang';
 
 const errorMessage = '<html> element must have valid [lang] attribute';
+const successMessage = '<html> element has [lang] attribute';
 
 const validLang: Rule = {
   name: 'valid-lang',
@@ -14,7 +15,14 @@ const validLang: Rule = {
 
       const isValidLang = codeToLang(lang);
 
-      if (isValidLang) return;
+      if (isValidLang) {
+        context.pass({
+          node,
+          message: successMessage,
+        });
+
+        return;
+      }
 
       const langCode = langToCode(lang.toLowerCase());
 

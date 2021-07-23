@@ -1,6 +1,7 @@
 import { Rule } from '../utils/traverser';
 
-const errorMessage = '<a> element does not have a discernible name';
+const errorMessage = 'Links do not have a discernible name';
+const successMessage = 'Links have a discernible name';
 
 const linksDiscernableName: Rule = {
   name: 'links-discernible-name',
@@ -15,7 +16,14 @@ const linksDiscernableName: Rule = {
           node,
           message: errorMessage,
         });
+
+        return;
       }
+
+      context.pass({
+        node,
+        message: successMessage,
+      });
     },
   },
 };

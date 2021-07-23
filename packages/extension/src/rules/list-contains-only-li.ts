@@ -1,11 +1,9 @@
-import '../li-reset.css';
 import { Context, Rule } from '../utils/traverser';
 
 const errorMessage =
   'Lists do not contain only <li> elements and script supporting elements (<script> and <template>)';
-const getSuccessMessage = (name: string) => {
-  return `<${name}> replaced with <li>`;
-};
+const successMessage =
+  'Lists contain only <li> elements and script supporting elements (<script> and <template>)';
 
 function isValidChild(localName: string) {
   return ['script', 'template', 'li'].includes(localName);
@@ -24,7 +22,14 @@ function listRule(node: ListElement, context: Context) {
       node,
       message: errorMessage,
     });
+
+    return;
   }
+
+  context.pass({
+    node,
+    message: successMessage,
+  });
 }
 
 function listObserverRule(node: ListElement, context: Context) {

@@ -1,5 +1,9 @@
 import { Rule } from '../utils/traverser';
 
+const errorMessage = 'Element has a [tabindex] value greater than 0';
+const successMessage =
+  'Element does not have a [tabindex] value greater than 0';
+
 const noTabindex: Rule = {
   name: 'no-tabindex',
   visitor: {
@@ -11,9 +15,16 @@ const noTabindex: Rule = {
         // could cause navigation issues
         context.error({
           node,
-          message: 'Element has a [tabindex] value greater than 0',
+          message: errorMessage,
         });
+
+        return;
       }
+
+      context.pass({
+        node,
+        message: successMessage,
+      });
     },
   },
 };

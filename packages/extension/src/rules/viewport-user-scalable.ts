@@ -1,5 +1,11 @@
 import { Rule } from '../utils/traverser';
 
+const errorMessage =
+  '[user-scalable="no"] is used in <meta name="viewport"> element';
+const fixMessage = '[user-scalable="no"] removed from <meta name="viewport">';
+const successMessage =
+  '[user-scalable="no"] is not used in <meta name="viewport">';
+
 const viewportUserScalable: Rule = {
   name: 'viewport-user-scalable',
   visitor: {
@@ -11,23 +17,22 @@ const viewportUserScalable: Rule = {
       if (userScalable === 'no') {
         context.warn({
           node,
-          message:
-            '[user-scalable="no"] is used in the <meta name="viewport"> element',
+          message: errorMessage,
         });
 
         node.removeAttribute('user-scalable');
 
         context.fix({
           node,
-          message: '',
+          message: fixMessage,
         });
+
+        return;
       }
 
       const maximumScale = node.getAttribute('maximum-scale');
 
-      if (!maximumScale) return;
-
-      if (Number(maximumScale) < 5) {
+      if (maximumScale && Number(maximumScale) < 5) {
         context.warn({
           node,
           message: '[maximum-scale] attribute is less than 5.',
@@ -39,7 +44,14 @@ const viewportUserScalable: Rule = {
           node,
           message: '',
         });
+
+        return;
       }
+
+      context.pass({
+        node,
+        message: successMessage,
+      });
     },
   },
 };

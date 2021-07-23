@@ -1,7 +1,8 @@
 import { Rule } from '../utils/traverser';
 
 const errorMessage = '<body> element should not have [aria-hidden="true"]';
-const successMessage = '[aria-hidden="true"] removed from <body> element';
+const fixMessage = '[aria-hidden="true"] removed from <body> element';
+const successMessage = '<body> element does not have [aria-hidden="true"]';
 
 const noAriaHiddenBody: Rule = {
   name: 'no-aria-hidden-body',
@@ -19,9 +20,16 @@ const noAriaHiddenBody: Rule = {
 
         context.fix({
           node,
-          message: successMessage,
+          message: fixMessage,
         });
+
+        return;
       }
+
+      context.pass({
+        message: successMessage,
+        node,
+      });
     },
   },
 };

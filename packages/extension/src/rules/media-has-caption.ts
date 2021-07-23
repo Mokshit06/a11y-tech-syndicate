@@ -1,10 +1,11 @@
 import { useCaptions } from '../devpanel/components/caption';
-import isReact from '../utils/is-react';
 import { Context, Rule } from '../utils/traverser';
 
 const errorMessage =
   'Media elements such as <audio> and <video> must have a <track> for captions.';
-const successMessage = 'Captions generated for media elements!';
+const fixMessage = 'Captions generated for media elements!';
+const successMessage =
+  'Media elements such as <audio> and <video> have <track> for captions';
 
 type MediaElement = HTMLVideoElement | HTMLAudioElement;
 
@@ -72,7 +73,7 @@ function mediaRule(node: MediaElement, context: Context) {
 
     context.fix({
       node,
-      message: successMessage,
+      message: fixMessage,
     });
 
     return;
@@ -93,14 +94,14 @@ function mediaRule(node: MediaElement, context: Context) {
 
     context.fix({
       node,
-      message: successMessage,
+      message: fixMessage,
     });
 
     return;
   }
 
   context.pass({
-    message: '',
+    message: successMessage,
     node,
   });
 }

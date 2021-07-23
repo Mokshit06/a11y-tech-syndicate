@@ -3,7 +3,8 @@ import { Context, Rule } from '../utils/traverser';
 
 const errorMessage =
   'Headings must have content and the content must be accessible by a screen reader.';
-const successMessage = 'Removed empty heading element';
+const successMessage = 'Headings have content';
+const fixMessage = 'Removed empty heading element';
 
 const headingRule = (node: HTMLHeadingElement, context: Context) => {
   if (isHiddenFromScreenReader(node)) return;
@@ -12,11 +13,6 @@ const headingRule = (node: HTMLHeadingElement, context: Context) => {
     for (const mutation of mutations) {
       if (mutation.type === 'characterData' || mutation.type === 'childList') {
         if (!node.innerText) {
-          context.warn({
-            message: errorMessage,
-            node,
-          });
-
           node.hidden = true;
         } else {
           node.hidden = false;
@@ -41,9 +37,16 @@ const headingRule = (node: HTMLHeadingElement, context: Context) => {
 
     context.fix({
       node,
-      message: successMessage,
+      message: fixMessage,
     });
+
+    return;
   }
+
+  context.pass({
+    node,
+    message: successMessage,
+  });
 };
 
 const headingHasContent: Rule = {
