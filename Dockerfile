@@ -2,6 +2,9 @@ FROM node:14
 
 WORKDIR /app
 
+RUN apt update
+RUN apt install ffmpeg
+
 COPY package.json .
 COPY yarn.lock .
 COPY packages/server/package.json ./packages/server/
@@ -9,7 +12,6 @@ COPY packages/server/package.json ./packages/server/
 RUN yarn install
 
 COPY . .
-
 RUN yarn prisma migrate deploy
 RUN yarn prisma generate
 
