@@ -21,10 +21,10 @@ const noTabindex: Rule = {
         return;
       }
 
-      context.pass({
-        node,
-        message: successMessage,
-      });
+      // context.pass({
+      //   node,
+      //   message: successMessage,
+      // });
     },
   },
 };
