@@ -143,5 +143,3 @@ window.__A11Y_EXTENSION__ = {
 window.__A11Y_EXTENSION__.run();
 
 window.addEventListener('message', handleMessages, false);
-
-export {};

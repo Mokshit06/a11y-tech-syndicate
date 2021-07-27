@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { render } from 'preact/compat';
+import React, { useEffect, useState } from 'react';
 
 declare const $0: HTMLElement;
 
@@ -28,7 +28,12 @@ function getA11yResult() {
 }
 
 function App() {
-  const [result, setResult] = useState({});
+  const [result, setResult] = useState({
+    errors: [],
+    passes: [],
+    fixes: [],
+    warnings: [],
+  });
 
   const handleSelectionChange = () => {
     chrome.devtools.inspectedWindow.eval(
@@ -51,9 +56,9 @@ function App() {
     };
   }, []);
 
-  return <pre style={{ color: 'red' }}>{JSON.stringify(result, null, 2)}</pre>;
+  return (
+    <pre style={{ color: 'white' }}>{JSON.stringify(result, null, 2)}</pre>
+  );
 }
 
 render(<App />, document.getElementById('app')!);
-
-export {};

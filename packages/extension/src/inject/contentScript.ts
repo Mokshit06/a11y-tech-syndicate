@@ -1,10 +1,6 @@
-const source = '@devtools-extension';
 const pageSource = '@devtools-page';
-const maxChromeMsgSize = 32 * 1024 * 1024;
 let connected = false;
 let bg: chrome.runtime.Port | undefined;
-
-type TODO = any;
 
 function connect() {
   connected = true;

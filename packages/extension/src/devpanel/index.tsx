@@ -26,5 +26,3 @@ function renderPanel() {
 }
 
 renderPanel();
-
-export {};
