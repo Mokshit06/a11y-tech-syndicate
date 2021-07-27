@@ -22,8 +22,8 @@ const preactAlias = {
 esbuild
   .build({
     entryPoints: [
-      resolve('src/inject/contentScript'),
       resolve('src/background/index.ts'),
+      resolve('src/inject/contentScript'),
       resolve('src/inject/pageScript.tsx'),
       resolve('src/inject/pageScriptWrap.ts'),
       resolve('src/devtools/index.ts'),

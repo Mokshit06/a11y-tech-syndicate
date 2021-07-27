@@ -9,8 +9,8 @@ export type Context = {
   pass: (message: Payload) => void;
 };
 
-export type VisitorNode<Node = Element> = (
-  node: Node,
+export type VisitorNode<TNode = Element> = (
+  node: TNode,
   context: Context
 ) => void;
 
@@ -69,21 +69,6 @@ const defaultContext = (name: string): Context => ({
   },
 });
 
-// TODO change impl to maybe just traverse the nodes
-// specified in rules
-//
-// rules = [
-//  {
-//    name: 'visitor',
-//    visitor: {
-//      img: () = {}
-//      input: () = {}
-//    }
-//  }
-// ]
-//
-// nodes = [['img', [() => {}]], ['input', [() => {}]]]
-//
 export function traverser(
   node: HTMLElement,
   rules: Rule[],

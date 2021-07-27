@@ -184,7 +184,7 @@ function Section({
 const statusToProperty = {
   error: 'errors',
   warning: 'warnings',
-  success: 'passed',
+  success: 'passes',
   info: 'fixes',
 };
 

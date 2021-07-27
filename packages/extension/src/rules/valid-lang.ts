@@ -3,7 +3,7 @@ import langToCode from '../utils/lang-to-code';
 import codeToLang from '../utils/code-to-lang';
 
 const errorMessage = '<html> element must have valid [lang] attribute';
-const successMessage = '<html> element has [lang] attribute';
+const successMessage = '<html> element has valid [lang] attribute';
 
 const validLang: Rule = {
   name: 'valid-lang',
