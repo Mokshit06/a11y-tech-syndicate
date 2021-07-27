@@ -74,7 +74,6 @@ function createContext(name: string): Context {
   return {
     error(payload) {
       window.__A11Y_EXTENSION__.errors.push(payload.node);
-
       postMessage({
         event: 'error',
         payload: { ...payload, name },
@@ -82,7 +81,6 @@ function createContext(name: string): Context {
     },
     warn(payload) {
       window.__A11Y_EXTENSION__.warnings.push(payload.node);
-
       postMessage({
         event: 'warn',
         payload: { ...payload, name },
@@ -90,7 +88,6 @@ function createContext(name: string): Context {
     },
     fix(payload) {
       window.__A11Y_EXTENSION__.fixes.push(payload.node);
-
       postMessage({
         event: 'fix',
         payload: { ...payload, name },
@@ -98,7 +95,6 @@ function createContext(name: string): Context {
     },
     pass(payload) {
       window.__A11Y_EXTENSION__.passed.push(payload.node);
-
       postMessage({
         event: 'pass',
         payload: { ...payload, name },

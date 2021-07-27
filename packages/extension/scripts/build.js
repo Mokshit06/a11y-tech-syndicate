@@ -28,6 +28,7 @@ esbuild
       resolve('src/inject/pageScriptWrap.ts'),
       resolve('src/devtools/index.ts'),
       resolve('src/devpanel/index.tsx'),
+      resolve('src/sidebar/index.tsx'),
     ],
     assetNames: 'assets/[name].[hash]',
     publicPath: 'out',
