@@ -1,11 +1,12 @@
-import create from 'zustand';
 import memoize from './memoize';
 
+export type Payload = { node: any; message: string };
+
 export type Context = {
-  error: (error: { node: any; message: string }) => void;
-  warn: (warning: { node: any; message: string }) => void;
-  fix: (message: { node: any; message: string }) => void;
-  pass: (message: { node: any; message: string }) => void;
+  error: (error: Payload) => void;
+  warn: (warning: Payload) => void;
+  fix: (message: Payload) => void;
+  pass: (message: Payload) => void;
 };
 
 export type VisitorNode<Node = Element> = (

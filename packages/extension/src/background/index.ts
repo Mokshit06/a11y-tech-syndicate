@@ -30,19 +30,16 @@ function disconnect(
   };
 }
 
-function relay(message: any, sender: chrome.runtime.MessageSender) {
+function relay(message: Message, sender: chrome.runtime.MessageSender) {
   let tabId = getId(sender);
 
   if (!tabId) return;
   if (sender.frameId) tabId = `${tabId}-${sender.frameId}`;
 
   const action = {
-    type: 'relay',
     message,
     id: tabId,
   };
-
-  debugger;
 
   connections.panel.forEach(connection => {
     connection.postMessage(action);
@@ -50,8 +47,6 @@ function relay(message: any, sender: chrome.runtime.MessageSender) {
 }
 
 chrome.runtime.onConnect.addListener(port => {
-  debugger;
-
   if (port.name === 'content_script') {
     let id = getId(port.sender!);
 
@@ -61,7 +56,7 @@ chrome.runtime.onConnect.addListener(port => {
 
     connections.tab.set(id, port);
 
-    const listener = (message: any) => {
+    const listener = (message: Message) => {
       relay(message, port.sender!);
     };
 
