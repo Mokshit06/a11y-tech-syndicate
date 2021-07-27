@@ -37,7 +37,7 @@ export default function App() {
   const totalIssues = results.errors.length + results.warnings.length;
 
   const testsPassed = useMemo(() => {
-    if (totalIssues === 0) return 0;
+    if (totalIssues + results.passes.length === 0) return 0;
 
     return Math.round(
       (results.passes.length / (totalIssues + results.passes.length)) * 100

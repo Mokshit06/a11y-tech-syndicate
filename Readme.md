@@ -2,9 +2,9 @@
 
 ## Requirements
 
-- yarn
+- ffmpeg
 - node
-- postgres
+- yarn
 - chrome
 
 ## Setup
@@ -48,7 +48,12 @@ yarn prisma migrate dev
 yarn dev
 ```
 
+9. Open any website and click `ctrl` + `shift` + `i`. There should be a new panel called `a11y`. Click `Start` to run the
+   the accessibility suite and show the stats.
+
+10. To see the accessibility stats of a specific element, open the `Elements` tab, click on the element and from the sidebar panes, select `a11y`.
+
 ### Info
 
 The server trims the audios and videos to max 10s and has a limit of generating alt text for 30 images.
-These can be disabled but are there so as to avoid accidental processing of large files and additional billing.
+These can be disabled but are there so as to prevent accidental processing of large files and additional billing.
