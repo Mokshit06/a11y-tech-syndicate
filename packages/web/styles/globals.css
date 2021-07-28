@@ -14,3 +14,7 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.object-fit {
+  object-fit: contain;
+}

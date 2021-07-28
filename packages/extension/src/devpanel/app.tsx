@@ -122,7 +122,14 @@ export default function App() {
           {testsPassedProgress}
         </HStack>
         <Flex w="100%" direction="column">
-          <Button my="14px" w="fit-content" mx="auto" onClick={handleStart}>
+          <Button
+            loadingText="Running"
+            isLoading={traversing}
+            my="14px"
+            w="fit-content"
+            mx="auto"
+            onClick={handleStart}
+          >
             {hasTraversed ? 'Restart' : 'Start'}
           </Button>
           <Section
