@@ -16,6 +16,7 @@ import noTabindex from '../rules/no-tabindex';
 import validLang from '../rules/valid-lang';
 import viewportUserScalable from '../rules/viewport-user-scalable';
 import { A11yResults, Message } from '../types';
+import isSSR from '../utils/is-ssr';
 import nodeIdentifier from '../utils/node-identifier';
 import { Context, Payload, traverser } from '../utils/traverser';
 import './styles.css';
@@ -72,7 +73,7 @@ function createContext(name: string): Context {
   };
 }
 
-function runTraverser() {
+function runTraverser(createContext: (name: string) => Context) {
   traverser(
     document.documentElement,
     [
@@ -129,8 +130,26 @@ function runTraverser() {
 
 window.__A11Y_EXTENSION__ = {
   run: () => {
-    // delay 1s for client side rendering
-    setTimeout(() => runTraverser(), 1000);
+    // if (isSSR()) {
+    //   runTraverser(createContext);
+
+    //   // run traverser after 1s
+    //   // incase some hydration took place
+    //   // but dont report the result
+    //   setTimeout(
+    //     () =>
+    //       runTraverser(() => ({
+    //         error: () => {},
+    //         fix: () => {},
+    //         pass: () => {},
+    //         warn: () => {},
+    //       })),
+    //     1000
+    //   );
+    // } else {
+    // delay 1s for client side rendering/ hydration
+    setTimeout(() => runTraverser(createContext), 1000);
+    // }
   },
   state: {
     errors: [],
