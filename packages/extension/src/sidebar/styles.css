@@ -1,0 +1,62 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.a11y-sidebar-pane {
+  color: #d5d5d5;
+  padding: 16px;
+}
+
+.a11y-sidebar-pane h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.a11y-sidebar-pane ul {
+  list-style: none;
+  display: block;
+}
+
+.a11y-sidebar-pane li {
+  /* background-color: hsl(0deg 100% 8%);
+  color: hsl(0deg 100% 75%); */
+  background-color: var(--background);
+  color: var(--color);
+  margin-bottom: 3px;
+  padding: 12px;
+}
+
+.a11y-sidebar-pane > section:not(:first-child) {
+  border-top: 1px solid #363943;
+}
+
+.a11y-sidebar-pane > section {
+  padding: 9px 0;
+}
+
+.a11y-sidebar-pane .rule-name {
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.a11y-sidebar-pane .error-section {
+  --background: rgba(185, 28, 28, 0.5);
+  --color: #fef2f2;
+}
+
+.a11y-sidebar-pane .fix-section {
+  --background: rgba(29, 78, 216, 0.5);
+  --color: #eff6ff;
+}
+
+.a11y-sidebar-pane .pass-section {
+  --background: rgba(4, 120, 87, 0.5);
+  --color: rgba(255, 255, 255, 0.92);
+}

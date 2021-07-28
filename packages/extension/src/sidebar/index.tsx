@@ -1,5 +1,6 @@
 import { render } from 'preact/compat';
 import React, { useEffect, useState } from 'react';
+import './styles.css';
 
 declare const $0: HTMLElement;
 
@@ -57,7 +58,44 @@ function App() {
   }, []);
 
   return (
-    <pre style={{ color: 'white' }}>{JSON.stringify(result, null, 2)}</pre>
+    // <pre style={{ color: 'white' }}>{JSON.stringify(result, null, 2)}</pre>
+    <div className="a11y-sidebar-pane">
+      <Section
+        title="Errors"
+        results={result.errors}
+        className="error-section"
+      />
+      <Section title="Fixes" results={result.fixes} className="fix-section" />
+      <Section
+        title="Passes"
+        results={result.passes}
+        className="pass-section"
+      />
+    </div>
+  );
+}
+
+function Section({
+  title,
+  results,
+  className,
+}: {
+  title: string;
+  results: { message: string; name: string }[];
+  className: string;
+}) {
+  return (
+    <section>
+      <h3>{title}</h3>
+      <ul className={className}>
+        {results.map(result => (
+          <li>
+            <p className="rule-name">{result.name}</p>
+            <p>{result.message}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
