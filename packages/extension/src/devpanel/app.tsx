@@ -11,6 +11,7 @@ import {
   HStack,
   Stack,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -164,9 +165,10 @@ function Section({
   progress: React.ReactElement;
 }) {
   const href = `#${status}`;
+  const borderColor = useColorModeValue('gray.100', 'gray.700');
 
   return (
-    <Box id={href} borderTop="1px" borderColor="gray.700">
+    <Box id={href} borderTop="1px" borderColor={borderColor}>
       <Box padding="12px" maxW="calc(60 * 12px)" m="0 auto">
         <Box fontSize="2xl" mb="8px">
           <Box maxW="400px" w="auto" m="0px auto">
@@ -205,6 +207,7 @@ function Message({
   status: AlertStatus;
 }) {
   const [isOpen, setOpen] = useState(false);
+  const background = useColorModeValue('gray.100', 'gray.700');
 
   return (
     <div>
@@ -235,7 +238,7 @@ function Message({
               }}
               transition={{ duration: 0.2, ease: [0.04, 0.6, 0.2, 0.9] }}
             >
-              <Box background="gray.700" p="10px 12px">
+              <Box background={background} p="10px 12px">
                 <Text
                   cursor="pointer"
                   fontFamily="monospace"
@@ -278,7 +281,7 @@ function Progress({
       textDecor="none"
       p="8px"
     >
-      <CircularProgress size={100} value={value} color={color}>
+      <CircularProgress thickness="10px" size={100} value={value} color={color}>
         <CircularProgressLabel>{value}</CircularProgressLabel>
       </CircularProgress>
       <Text marginTop="14px">{title}</Text>
