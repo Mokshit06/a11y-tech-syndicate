@@ -3,6 +3,7 @@ import { Rule } from '../utils/traverser';
 const errorMessage = 'Element has a [tabindex] value greater than 0';
 const successMessage =
   'Element does not have a [tabindex] value greater than 0';
+const fixMessage = '[tabindex] attribute has been set to 0';
 
 const noTabindex: Rule = {
   name: 'no-tabindex',
@@ -11,11 +12,16 @@ const noTabindex: Rule = {
       if (!node.tabIndex) return;
 
       if (node.tabIndex > 0) {
-        // not fixable as it
-        // could cause navigation issues
-        context.error({
+        context.warn({
           node,
           message: errorMessage,
+        });
+
+        node.tabIndex = 0;
+
+        context.fix({
+          node,
+          message: fixMessage,
         });
 
         return;

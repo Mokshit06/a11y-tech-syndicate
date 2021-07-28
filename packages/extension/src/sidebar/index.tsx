@@ -58,12 +58,16 @@ function App() {
   }, []);
 
   return (
-    // <pre style={{ color: 'white' }}>{JSON.stringify(result, null, 2)}</pre>
     <div className="a11y-sidebar-pane">
       <Section
         title="Errors"
         results={result.errors}
         className="error-section"
+      />
+      <Section
+        title="Warnings"
+        results={result.warnings}
+        className="warning-section"
       />
       <Section title="Fixes" results={result.fixes} className="fix-section" />
       <Section

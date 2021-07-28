@@ -42,7 +42,7 @@ const viewportUserScalable: Rule = {
 
         context.fix({
           node,
-          message: '',
+          message: '[maximum-scale] attribute has been removed',
         });
 
         return;

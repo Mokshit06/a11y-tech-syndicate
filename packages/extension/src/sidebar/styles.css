@@ -48,16 +48,21 @@ body {
 }
 
 .a11y-sidebar-pane .error-section {
-  --background: rgba(185, 28, 28, 0.5);
+  --background: rgba(220, 38, 38, 0.6);
   --color: #fef2f2;
 }
 
+.a11y-sidebar-pane .warning-section {
+  --background: rgba(245, 158, 11, 0.6);
+  --color: #fffbeb;
+}
+
 .a11y-sidebar-pane .fix-section {
-  --background: rgba(29, 78, 216, 0.5);
+  --background: rgba(59, 130, 246, 0.5);
   --color: #eff6ff;
 }
 
 .a11y-sidebar-pane .pass-section {
-  --background: rgba(4, 120, 87, 0.5);
+  --background: rgba(16, 185, 129, 0.5);
   --color: rgba(255, 255, 255, 0.92);
 }

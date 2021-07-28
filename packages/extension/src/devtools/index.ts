@@ -7,7 +7,7 @@ chrome.devtools.panels.create(
   panel => {}
 );
 
-chrome.devtools.panels.elements.createSidebarPane('a11y issues', sidebar => {
+chrome.devtools.panels.elements.createSidebarPane('a11y', sidebar => {
   sidebar.setPage('static/sidebar.html');
   sidebar.setHeight('100vh');
 
